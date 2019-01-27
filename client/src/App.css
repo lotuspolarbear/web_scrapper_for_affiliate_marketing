@@ -1,0 +1,27 @@
+.mt-100 {
+	margin-top: 100px;
+}
+.custom-confirm-alert {
+	text-align: center;
+	width: 500px;
+	padding: 40px;
+	background: #28bae6;
+	box-shadow: 0 20px 75px rgba(0, 0, 0, 0.23);
+	color: #fff;
+}
+.custom-confirm-alert > h2 {
+	font-size: 27px;
+}
+.custom-confirm-alert > button {
+	width: 160px;
+	padding: 10px;
+	border: 1px solid #fff;
+	margin: 20px;
+	cursor: pointer;
+	background: none;
+	color: #fff;
+	font-size: 14px;
+}
+.text-center {
+	text-align: center;
+}
