@@ -20,6 +20,12 @@ const actionsStyles = theme => ({
 		flexShrink: 0,
 		color: theme.palette.text.secondary,
 		marginLeft: theme.spacing.unit * 2.5
+	},
+	customButton: {
+		outline: "none",
+		"&:focus": {
+			outline: "none"
+		}
 	}
 });
 
@@ -45,13 +51,24 @@ class TablePaginationActions extends React.Component {
 
 		return (
 			<div className={classes.root}>
-				<IconButton onClick={this.handleFirstPageButtonClick} disabled={page === 0} aria-label='First Page'>
+				<IconButton
+					className={classes.customButton}
+					onClick={this.handleFirstPageButtonClick}
+					disabled={page === 0}
+					aria-label='First Page'
+				>
 					{theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
 				</IconButton>
-				<IconButton onClick={this.handleBackButtonClick} disabled={page === 0} aria-label='Previous Page'>
+				<IconButton
+					className={classes.customButton}
+					onClick={this.handleBackButtonClick}
+					disabled={page === 0}
+					aria-label='Previous Page'
+				>
 					{theme.direction === "rtl" ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
 				</IconButton>
 				<IconButton
+					className={classes.customButton}
 					onClick={this.handleNextButtonClick}
 					disabled={page >= Math.ceil(count / rowsPerPage) - 1}
 					aria-label='Next Page'
@@ -59,6 +76,7 @@ class TablePaginationActions extends React.Component {
 					{theme.direction === "rtl" ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
 				</IconButton>
 				<IconButton
+					className={classes.customButton}
 					onClick={this.handleLastPageButtonClick}
 					disabled={page >= Math.ceil(count / rowsPerPage) - 1}
 					aria-label='Last Page'
