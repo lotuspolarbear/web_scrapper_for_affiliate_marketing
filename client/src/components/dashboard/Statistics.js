@@ -89,6 +89,9 @@ const styles = theme => ({
 	table: {
 		minWidth: 500
 	},
+	tableCell: {
+		fontSize: "1rem"
+	},
 	tableWrapper: {
 		overflowX: "auto"
 	}
@@ -153,7 +156,7 @@ class Statistics extends React.Component {
 					<Table className={classes.table}>
 						<TableBody>
 							<TableRow>
-								<TableCell>
+								<TableCell className={classes.tableCell}>
 									{tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
 										var display = (
 											<React.Fragment key={row.visits}>
