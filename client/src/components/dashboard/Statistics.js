@@ -1,3 +1,4 @@
+import "date-fns";
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
@@ -14,6 +15,9 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import axios from "axios";
+import Grid from "@material-ui/core/Grid";
+import DateFnsUtils from "@date-io/date-fns";
+import { MuiPickersUtilsProvider, DatePicker } from "material-ui-pickers";
 
 const actionsStyles = theme => ({
 	root: {
@@ -101,11 +105,12 @@ const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: tru
 
 const styles = theme => ({
 	root: {
-		width: "100%",
-		marginTop: theme.spacing.unit * 3
+		width: "100%"
+		// marginTop: theme.spacing.unit * 3
 	},
 	table: {
-		minWidth: 500
+		minWidth: 500,
+		marginTop: 40
 	},
 	tableCell: {
 		fontSize: "1rem"
@@ -124,7 +129,8 @@ class Statistics extends React.Component {
 			selectedId: "",
 			tableData: [],
 			statisticsTable: [],
-			old: {}
+			old: {},
+			selectedDate: new Date("2014-08-18T21:11:54")
 		};
 	}
 
@@ -153,6 +159,10 @@ class Statistics extends React.Component {
 		}
 	}
 
+	handleDateChange = date => {
+		this.setState({ selectedDate: date });
+	};
+
 	handleChangePage = (event, page) => {
 		this.setState({ page });
 	};
@@ -165,12 +175,22 @@ class Statistics extends React.Component {
 		const { classes } = this.props;
 		const { old } = this.state;
 
-		const { rowsPerPage, page, tableData } = this.state;
+		const { rowsPerPage, page, tableData, selectedDate } = this.state;
 		// const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
 		return (
 			<Paper className={classes.root}>
 				<div className={classes.tableWrapper}>
+					<MuiPickersUtilsProvider utils={DateFnsUtils}>
+						<Grid container className={classes.grid} justify='flex-end'>
+							<DatePicker className="margin-right-50 date-picker"
+								margin='normal'
+								label='Date picker'
+								value={selectedDate}
+								onChange={this.handleDateChange}
+							/>
+						</Grid>
+					</MuiPickersUtilsProvider>
 					<Table className={classes.table}>
 						<TableBody>
 							<TableRow>

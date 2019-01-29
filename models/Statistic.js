@@ -55,10 +55,9 @@ module.exports.addStatistics = function(data, callback) {
 			}
 		}
 	);
-	// find().sort({_id:1}).limit(50)
 };
 module.exports.getStatistics = function(subAcctId, callback) {
 	Statistic.find({ subAcctId: subAcctId })
-		.sort({ _id: 1 })
+		.sort({ _id: -1 })
 		.exec(callback);
 };

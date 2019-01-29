@@ -100,7 +100,7 @@ class Dashboard extends Component {
 						)}
 						{value === 1 && (
 							<TabContainer>
-								<Referrals />
+								<Referrals id={this.state.selectedAccountId} />
 							</TabContainer>
 						)}
 						{value === 2 && (

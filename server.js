@@ -3,10 +3,11 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
 
+const crons = require("./controller/crons");
 const merchants = require("./routes/api/merchants");
 const subaccounts = require("./routes/api/subaccounts");
 const statistics = require("./routes/api/statistics");
-const crons = require("./controller/crons");
+const referrals = require("./routes/api/referrals");
 
 const app = express();
 
@@ -27,6 +28,8 @@ mongoose
 app.use("/api/merchants", merchants);
 app.use("/api/subaccounts", subaccounts);
 app.use("/api/statistics", statistics);
+app.use("/api/referrals", referrals);
+
 crons.prepareCron();
 
 // Serve static assets if in production
