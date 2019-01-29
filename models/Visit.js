@@ -14,11 +14,11 @@ const VisitSchema = new Schema({
 	href: {
 		type: String
 	},
-	refferUrl: {
+	referUrl: {
 		type: String
 	},
 	convStatus: {
-		type: String
+		type: Boolean
 	},
 	visitDate: {
 		type: String
@@ -35,7 +35,7 @@ module.exports.addVisit = function(newVisit) {
 		subAcctId: newVisit.subAcctId,
 		url: newVisit.url,
 		href: newVisit.href,
-		refferUrl: newVisit.refferUrl,
+		referUrl: newVisit.referUrl,
 		convStatus: newVisit.convStatus,
 		visitDate: newVisit.visitDate,
 		scrappedDate: newVisit.scrappedDate

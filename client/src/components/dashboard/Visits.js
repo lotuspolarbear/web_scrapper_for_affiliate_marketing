@@ -15,6 +15,7 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import TableHead from "@material-ui/core/TableHead";
 import axios from "axios";
+const uuidv1 = require('uuid/v1');
 
 const actionsStyles = theme => ({
 	root: {
@@ -110,12 +111,6 @@ const CustomTableCell = withStyles(theme => ({
 	}
 }))(TableCell);
 
-let counter = 0;
-function createData(name, calories, fat) {
-	counter += 1;
-	return { id: counter, name, calories, fat };
-}
-
 const styles = theme => ({
 	root: {
 		width: "100%",
@@ -133,7 +128,7 @@ const styles = theme => ({
 		overflowX: "auto"
 	},
 	customFont: {
-		fontSize: 14
+		fontSize: 16
 	},
 	customBtn: {
 		"&:focus": {
@@ -183,8 +178,7 @@ class Visits extends React.Component {
 
 	render() {
 		const { classes } = this.props;
-		const { rows, rowsPerPage, page, tableData } = this.state;
-		console.log(tableData.length);
+		const { rowsPerPage, page, tableData } = this.state;
 		// const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
 		return (
@@ -195,10 +189,7 @@ class Visits extends React.Component {
 							<TableRow>
 								<CustomTableCell padding='checkbox' align='center'>
 									URL
-								</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>
-									Href
-								</CustomTableCell>
+								</CustomTableCell>	
 								<CustomTableCell padding='checkbox' align='center'>
 									Referring URL
 								</CustomTableCell>
@@ -215,18 +206,15 @@ class Visits extends React.Component {
 						</TableHead>
 						<TableBody>
 							{tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-								<TableRow className={classes.row} key={row.url}>
+								<TableRow className={classes.row} key={uuidv1()}>
 									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.url}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.href}
+										<a href={row.href} target="_blank">{row.url}</a>
 									</TableCell>
 									<TableCell padding='checkbox' className={classes.customFont} align='center'>
 										{row.referUrl}
 									</TableCell>
 									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.convStatus}
+										{row.convStatus ? "o" : "x"}
 									</TableCell>
 									<TableCell padding='checkbox' className={classes.customFont} align='center'>
 										{row.visitDate}

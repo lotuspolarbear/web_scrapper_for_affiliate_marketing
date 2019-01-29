@@ -110,12 +110,6 @@ const CustomTableCell = withStyles(theme => ({
 	}
 }))(TableCell);
 
-let counter = 0;
-function createData(name, calories, fat) {
-	counter += 1;
-	return { id: counter, name, calories, fat };
-}
-
 const styles = theme => ({
 	root: {
 		width: "100%",
@@ -184,8 +178,7 @@ class Referrals extends React.Component {
 
 	render() {
 		const { classes } = this.props;
-		const { rows, rowsPerPage, page, tableData } = this.state;
-		console.log(tableData.length);
+		const { rowsPerPage, page, tableData } = this.state;
 		// const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
 		return (

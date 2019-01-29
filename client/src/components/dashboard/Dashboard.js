@@ -11,10 +11,7 @@ import Payouts from "./Payouts";
 import Visits from "./Visits";
 import { Input } from "reactstrap";
 import axios from "axios";
-import { Container, Row, Col } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import $ from "jquery";
-import Popper from "popper.js";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 
 function TabContainer(props) {
@@ -36,22 +33,43 @@ class Dashboard extends Component {
 	state = {
 		value: 0,
 		subAccounts: [],
-		selectedAccountId: ""
+		merchants: [],
+		new_merchants:[],
+		selectedAccountId: "",
+		selectedMerchantId: "",
+		flag: true,
+		flag2: true
 	};
 
 	async componentDidMount() {
+		await axios.get("/api/merchants/getAllMerchants").then(res => {
+			if (res.data.length === 0) {
+				this.setState({ merchants: "no result" });
+			} else {
+				this.setState({
+					merchants: res.data.map(merchant => {
+						return { value: merchant._id, name: merchant.name };
+					})
+				});
+				this.setState({ selectedMerchantId: this.state.merchants[0].value });
+			}
+		});
 		await axios.get("/api/subaccounts/getAllSubAccounts").then(res => {
 			if (res.data.length === 0) {
 				this.setState({ subAccounts: "no result" });
 			} else {
 				this.setState({
 					subAccounts: res.data.map(account => {
-						return { value: account._id, name: account.name };
+						if(this.state.flag && account.merchantId === this.state.selectedMerchantId){
+							this.setState({ flag: false, selectedAccountId: account._id });
+						}
+						return { value: account._id, name: account.name, merchant_id: account.merchantId };
 					})
 				});
-				this.setState({ selectedAccountId: this.state.subAccounts[0].value });
+				
 			}
 		});
+		this.setState({flag: true});
 	}
 
 	handleTabChange = (event, value) => {
@@ -60,6 +78,18 @@ class Dashboard extends Component {
 
 	accountChanged = (event, value) => {
 		this.setState({ selectedAccountId: event.target.value });
+	};
+
+	merchantChanged = (event, value) => {
+		this.setState({selectedMerchantId: event.target.value});
+		var selectedMerchantId = event.target.value;
+		this.state.subAccounts.map(account => {
+			if(this.state.flag2 && account.merchant_id === selectedMerchantId){
+				this.setState({flag2: false, selectedAccountId: account.value });
+			}
+		});
+		
+		this.setState({flag2: true});
 	};
 
 	render() {
@@ -76,10 +106,10 @@ class Dashboard extends Component {
 									Marchants
 								</label>
 								<div className='col-md-6'>
-									<Input md={8} type='select' onChange={this.accountChanged}>
-										{this.state.subAccounts.map(account => (
-											<option key={account.value} value={account.value}>
-												{account.name}
+									<Input md={8} type='select' onChange={this.merchantChanged}>
+										{this.state.merchants.map(merchant => (
+											<option key={merchant.value} value={merchant.value}>
+												{merchant.name}
 											</option>
 										))}
 									</Input>
@@ -94,7 +124,7 @@ class Dashboard extends Component {
 								<div className='col-md-6'>
 									<Input md={8} type='select' onChange={this.accountChanged}>
 										{this.state.subAccounts.map(account => (
-											<option key={account.value} value={account.value}>
+											(this.state.selectedMerchantId === account.merchant_id) && <option key={account.value} value={account.value}>
 												{account.name}
 											</option>
 										))}
