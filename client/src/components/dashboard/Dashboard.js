@@ -12,6 +12,10 @@ import Visits from "./Visits";
 import { Input } from "reactstrap";
 import axios from "axios";
 import { Container, Row, Col } from "reactstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import $ from "jquery";
+import Popper from "popper.js";
+import "bootstrap/dist/js/bootstrap.bundle.min";
 
 function TabContainer(props) {
 	return <div style={{ padding: 20 }}>{props.children}</div>;
@@ -64,21 +68,42 @@ class Dashboard extends Component {
 
 		return (
 			this.state.subAccounts && (
-				<Container>
-					<Row className='form-group'>
-						<label htmlFor='name' className='col-sm-4 col-form-label text-right'>
-							Sub Accounts
-						</label>
-						<Col md={8}>
-							<Input md={8} type='select' onChange={this.accountChanged}>
-								{this.state.subAccounts.map(account => (
-									<option key={account.value} value={account.value}>
-										{account.name}
-									</option>
-								))}
-							</Input>
-						</Col>
-					</Row>
+				<div className='container'>
+					<div className='form-group row justify-content-end'>
+						<div className='col-md-3 offset-md-3'>
+							<div className='row'>
+								<label htmlFor='name' className='col-sm-6 col-form-label text-right'>
+									Marchants
+								</label>
+								<div className='col-md-6'>
+									<Input md={8} type='select' onChange={this.accountChanged}>
+										{this.state.subAccounts.map(account => (
+											<option key={account.value} value={account.value}>
+												{account.name}
+											</option>
+										))}
+									</Input>
+								</div>
+							</div>
+						</div>
+						<div className='col-md-3'>
+							<div className='row'>
+								<label htmlFor='name' className='col-sm-6 col-form-label text-right'>
+									Sub Accounts
+								</label>
+								<div className='col-md-6'>
+									<Input md={8} type='select' onChange={this.accountChanged}>
+										{this.state.subAccounts.map(account => (
+											<option key={account.value} value={account.value}>
+												{account.name}
+											</option>
+										))}
+									</Input>
+								</div>
+							</div>
+						</div>
+					</div>
+
 					<Paper className={classes.root}>
 						<AppBar position='static'>
 							<Tabs
@@ -110,11 +135,11 @@ class Dashboard extends Component {
 						)}
 						{value === 3 && (
 							<TabContainer>
-								<Visits />
+								<Visits id={this.state.selectedAccountId} />
 							</TabContainer>
 						)}
 					</Paper>
-				</Container>
+				</div>
 			)
 		);
 	}

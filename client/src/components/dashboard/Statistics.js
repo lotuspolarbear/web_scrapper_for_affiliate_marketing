@@ -18,6 +18,10 @@ import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, DatePicker } from "material-ui-pickers";
+import "bootstrap/dist/css/bootstrap.min.css";
+import $ from "jquery";
+import Popper from "popper.js";
+import "bootstrap/dist/js/bootstrap.bundle.min";
 
 const actionsStyles = theme => ({
 	root: {
@@ -110,7 +114,7 @@ const styles = theme => ({
 	},
 	table: {
 		minWidth: 500,
-		marginTop: 40
+		marginTop: 10
 	},
 	tableCell: {
 		fontSize: "1rem"
@@ -183,7 +187,8 @@ class Statistics extends React.Component {
 				<div className={classes.tableWrapper}>
 					<MuiPickersUtilsProvider utils={DateFnsUtils}>
 						<Grid container className={classes.grid} justify='flex-end'>
-							<DatePicker className="margin-right-50 date-picker"
+							<DatePicker
+								className='margin-right-50 date-picker'
 								margin='normal'
 								label='Date picker'
 								value={selectedDate}
@@ -195,7 +200,17 @@ class Statistics extends React.Component {
 						<TableBody>
 							<TableRow>
 								<TableCell className={classes.tableCell}>
-									{tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+									{tableData.slice(page + 1, page + 2).map(row => {
+										old.unpaidReferrals = row.unpaidReferrals;
+										old.paidReferrals = row.paidReferrals;
+										old.visits = row.visits;
+										old.convRate = row.convRate;
+										old.unpaidEarnings = row.unpaidEarnings;
+										old.paidEarnings = row.paidEarnings;
+										old.commissionRate = row.commissionRate;
+										old.statisticsTable = row.statisticsTable;
+									})}
+									{tableData.slice(page, page + 1).map(row => {
 										var display = (
 											<React.Fragment key={row.visits}>
 												<Table className='text-center' style={{ marginBottom: 30 }}>
@@ -207,47 +222,6 @@ class Statistics extends React.Component {
 															<th>Paid Referrals</th>
 															<th>Visits</th>
 															<th>Conversion Rate</th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr>
-															{(page === 0 ||
-																old.unpaidReferrals === row.unpaidReferrals) && (
-																<td>{row.unpaidReferrals}</td>
-															)}
-															{page !== 0 &&
-																old.unpaidReferrals !== row.unpaidReferrals && (
-																	<td style={{ color: "red" }}>
-																		{row.unpaidReferrals}
-																	</td>
-																)}
-															{(page === 0 ||
-																old.paidReferrals === row.paidReferrals) && (
-																<td>{row.paidReferrals}</td>
-															)}
-															{page !== 0 && old.paidReferrals !== row.paidReferrals && (
-																<td style={{ color: "red" }}>{row.paidReferrals}</td>
-															)}
-															{(page === 0 || old.visits === row.visits) && (
-																<td>{row.visits}</td>
-															)}
-															{page !== 0 && old.visits !== row.visits && (
-																<td style={{ color: "red" }}>{row.visits}</td>
-															)}
-															{(page === 0 || old.convRate === row.convRate) && (
-																<td>{row.convRate}</td>
-															)}
-															{page !== 0 && old.convRate !== row.convRate && (
-																<td style={{ color: "red" }}>{row.convRate}</td>
-															)}
-														</tr>
-													</tbody>
-												</Table>
-												<Table className='text-center' style={{ marginBottom: 30 }}>
-													<thead
-														style={{ backgroundColor: "RGBA(0,0,0,0.1)", color: "black" }}
-													>
-														<tr>
 															<th>Unpaid Earnings</th>
 															<th>Paid Earnings</th>
 															<th>Commission Rate</th>
@@ -255,32 +229,44 @@ class Statistics extends React.Component {
 													</thead>
 													<tbody>
 														<tr>
-															{(page === 0 ||
-																old.unpaidEarnings === row.unpaidEarnings) && (
+															{old.unpaidReferrals === row.unpaidReferrals && (
+																<td>{row.unpaidReferrals}</td>
+															)}
+															{old.unpaidReferrals !== row.unpaidReferrals && (
+																<td style={{ color: "red" }}>{row.unpaidReferrals}</td>
+															)}
+															{old.paidReferrals === row.paidReferrals && (
+																<td>{row.paidReferrals}</td>
+															)}
+															{old.paidReferrals !== row.paidReferrals && (
+																<td style={{ color: "red" }}>{row.paidReferrals}</td>
+															)}
+															{old.visits === row.visits && <td>{row.visits}</td>}
+															{old.visits !== row.visits && (
+																<td style={{ color: "red" }}>{row.visits}</td>
+															)}
+															{old.convRate === row.convRate && <td>{row.convRate}</td>}
+															{old.convRate !== row.convRate && (
+																<td style={{ color: "red" }}>{row.convRate}</td>
+															)}
+															{old.unpaidEarnings === row.unpaidEarnings && (
 																<td>{row.unpaidEarnings}</td>
 															)}
-															{page !== 0 &&
-																old.unpaidEarnings !== row.unpaidEarnings && (
-																	<td style={{ color: "red" }}>
-																		{row.unpaidEarnings}
-																	</td>
-																)}
-															{(page === 0 || old.paidEarnings === row.paidEarnings) && (
+															{old.unpaidEarnings !== row.unpaidEarnings && (
+																<td style={{ color: "red" }}>{row.unpaidEarnings}</td>
+															)}
+															{old.paidEarnings === row.paidEarnings && (
 																<td>{row.paidEarnings}</td>
 															)}
-															{page !== 0 && old.paidEarnings !== row.paidEarnings && (
+															{old.paidEarnings !== row.paidEarnings && (
 																<td style={{ color: "red" }}>{row.paidEarnings}</td>
 															)}
-															{(page === 0 ||
-																old.commissionRate === row.commissionRate) && (
+															{old.commissionRate === row.commissionRate && (
 																<td>{row.commissionRate}</td>
 															)}
-															{page !== 0 &&
-																old.commissionRate !== row.commissionRate && (
-																	<td style={{ color: "red" }}>
-																		{row.commissionRate}
-																	</td>
-																)}
+															{old.commissionRate !== row.commissionRate && (
+																<td style={{ color: "red" }}>{row.commissionRate}</td>
+															)}
 														</tr>
 													</tbody>
 												</Table>
@@ -301,60 +287,46 @@ class Statistics extends React.Component {
 															if (old.statisticsTable !== undefined) {
 																return (
 																	<tr key={el.campaign}>
-																		{(page === 0 ||
-																			old.statisticsTable[key].campaign ===
-																				el.campaign) && <td>{el.campaign}</td>}
-																		{page !== 0 &&
-																			old.statisticsTable[key].campaign !==
-																				el.campaign && (
-																				<td style={{ color: "red" }}>
-																					{el.campaign}
-																				</td>
-																			)}
-																		{(page === 0 ||
-																			old.statisticsTable[key].visits ===
-																				el.visits) && <td>{el.visits}</td>}
-																		{page !== 0 &&
-																			old.statisticsTable[key].visits !==
-																				el.visits && (
-																				<td style={{ color: "red" }}>
-																					{el.visits}
-																				</td>
-																			)}
-																		{(page === 0 ||
-																			old.statisticsTable[key].uniqueLinks ===
-																				el.uniqueLinks) && (
-																			<td>{el.uniqueLinks}</td>
+																		{old.statisticsTable[key].campaign ===
+																			el.campaign && <td>{el.campaign}</td>}
+																		{old.statisticsTable[key].campaign !==
+																			el.campaign && (
+																			<td style={{ color: "red" }}>
+																				{el.campaign}
+																			</td>
 																		)}
-																		{page !== 0 &&
-																			old.statisticsTable[key].uniqueLinks !==
-																				el.uniqueLinks && (
-																				<td style={{ color: "red" }}>
-																					{el.uniqueLinks}
-																				</td>
-																			)}
-																		{(page === 0 ||
-																			old.statisticsTable[key].converted ===
-																				el.converted) && (
-																			<td>{el.converted}</td>
+																		{old.statisticsTable[key].visits ===
+																			el.visits && <td>{el.visits}</td>}
+																		{old.statisticsTable[key].visits !==
+																			el.visits && (
+																			<td style={{ color: "red" }}>
+																				{el.visits}
+																			</td>
 																		)}
-																		{page !== 0 &&
-																			old.statisticsTable[key].converted !==
-																				el.converted && (
-																				<td style={{ color: "red" }}>
-																					{el.converted}
-																				</td>
-																			)}
-																		{(page === 0 ||
-																			old.statisticsTable[key].convRate ===
-																				el.convRate) && <td>{el.convRate}</td>}
-																		{page !== 0 &&
-																			old.statisticsTable[key].convRate !==
-																				el.convRate && (
-																				<td style={{ color: "red" }}>
-																					{el.convRate}
-																				</td>
-																			)}
+																		{old.statisticsTable[key].uniqueLinks ===
+																			el.uniqueLinks && <td>{el.uniqueLinks}</td>}
+																		{old.statisticsTable[key].uniqueLinks !==
+																			el.uniqueLinks && (
+																			<td style={{ color: "red" }}>
+																				{el.uniqueLinks}
+																			</td>
+																		)}
+																		{old.statisticsTable[key].converted ===
+																			el.converted && <td>{el.converted}</td>}
+																		{old.statisticsTable[key].converted !==
+																			el.converted && (
+																			<td style={{ color: "red" }}>
+																				{el.converted}
+																			</td>
+																		)}
+																		{old.statisticsTable[key].convRate ===
+																			el.convRate && <td>{el.convRate}</td>}
+																		{old.statisticsTable[key].convRate !==
+																			el.convRate && (
+																			<td style={{ color: "red" }}>
+																				{el.convRate}
+																			</td>
+																		)}
 																	</tr>
 																);
 															} else {
@@ -373,14 +345,7 @@ class Statistics extends React.Component {
 												</Table>
 											</React.Fragment>
 										);
-										old.unpaidReferrals = row.unpaidReferrals;
-										old.paidReferrals = row.paidReferrals;
-										old.visits = row.visits;
-										old.convRate = row.convRate;
-										old.unpaidEarnings = row.unpaidEarnings;
-										old.paidEarnings = row.paidEarnings;
-										old.commissionRate = row.commissionRate;
-										old.statisticsTable = row.statisticsTable;
+
 										return display;
 									})}
 								</TableCell>
