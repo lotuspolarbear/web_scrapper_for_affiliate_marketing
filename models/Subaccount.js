@@ -50,3 +50,8 @@ module.exports.addSubaccount = function(newSubaccount, callback){
 module.exports.reSchedule = function(schedule, callback){
     Subaccount.findOneAndUpdate({ _id: schedule.accountId}, {cronSched: schedule.cronSched}, {new: true}, callback);
 }
+module.exports.getSubAccounts = function(callback) {
+	Subaccount.find()
+		.sort({ _id: -1 })
+		.exec(callback);
+};

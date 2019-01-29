@@ -31,6 +31,9 @@ const StatisticSchema = new Schema({
 	},
 	statisticsTable: {
 		type: []
+	},
+	scrappedDate: {
+		type: String
 	}
 });
 
@@ -52,6 +55,8 @@ module.exports.addStatistics = function(data, callback) {
 		function(err, record) {
 			if (!record) {
 				data.save(callback);
+			} else {
+				console.log("Statistics not update for "+ data.subAcctId);
 			}
 		}
 	);
@@ -60,4 +65,7 @@ module.exports.getStatistics = function(subAcctId, callback) {
 	Statistic.find({ subAcctId: subAcctId })
 		.sort({ _id: -1 })
 		.exec(callback);
+};
+module.exports.deleteStatistics = function() {
+	Statistic.remove({}).exec();
 };

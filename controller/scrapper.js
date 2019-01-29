@@ -1,6 +1,8 @@
 "use strict";
 const cheerio = require("cheerio");
 const puppeteer = require("puppeteer");
+const date = require('date-and-time');
+
 const Statistic = require("../models/Statistic");
 const Referral = require("../models/Referral");
 
@@ -43,16 +45,17 @@ module.exports.doScrape = function(account) {
 			unpaidEarnings: unpaidEarnings,
 			paidEarnings: paidEarnings,
 			commissionRate: commissionRate,
-			statisticsTable: statisticsTable
+			statisticsTable: statisticsTable,
+			scrappedDate: date.format(new Date(), 'MMMM DD, YYYY hh:mm:ss A')
 		});
-		Statistic.addStatistics(data, (err, changed) => {console.log("Statistics added.")});
+		Statistic.addStatistics(data, (err, changed) => {console.log("Statistics added for " + account.username)});
 	}
 
 	async function referralsScrap(browser, cookies){
 		let lastDoc;
 		let newDocs = [];
 
-		await Referral.find({ subAcctId: account.subAcctId })
+		await Referral.find({ subAcctId: account._id })
 		.sort({ _id: -1 })
 		.limit(1)
 		.then(doc => lastDoc = doc);
@@ -61,7 +64,6 @@ module.exports.doScrape = function(account) {
 		await referralsPage.setCookie(...cookies);
 		var pageNumber = 1;
 		var scrapFlag = true;
-
 		while(scrapFlag){
 			await referralsPage.goto(account.loginUrl + "/page/" + pageNumber.toString() + "?tab=referrals#affwp-affiliate-dashboard-referrals", {waitUntil: 'networkidle0', timeout: 0});
 			var html = await referralsPage.content();
@@ -79,7 +81,7 @@ module.exports.doScrape = function(account) {
 					var description = $(current).children("td.referral-description").text();
 					var status = $(current).children("td.referral-status").text();
 					var refDate = $(current).children("td.referral-date").text();
-					var variationId = description.lastIndexOf("Variation ID") === -1 ? "none" : description.substring(description.lastIndexOf("Variation ID") + 12, description.length-1);
+					var variationId = description.lastIndexOf("Variation ID") === -1 ? "" : description.substring(description.lastIndexOf("Variation ID") + 12, description.length-1);
 					
 					if((lastDoc.length > 0) && (lastDoc[0].refferId == refferId) && (lastDoc[0].amount == amount) && (lastDoc[0].description == description) && (lastDoc[0].status == status) && (lastDoc[0].refDate == refDate) && (lastDoc[0].variationId == variationId)){
 						console.log("Last referral document found.");
@@ -94,7 +96,7 @@ module.exports.doScrape = function(account) {
 							description: description,
 							status: status,
 							refDate: refDate,
-							scrappedDate: new Date()
+							scrappedDate: date.format(new Date(), 'MMMM DD, YYYY hh:mm:ss A')
 						}
 						newDocs.push(data);
 					}
@@ -127,7 +129,7 @@ module.exports.doScrape = function(account) {
 		await loginPage.waitForNavigation();
 
 		const cookies = await loginPage.cookies();
-		statisticsScrap(browser, cookies);
+		//statisticsScrap(browser, cookies);
 		referralsScrap(browser, cookies);
 	}
 

@@ -27,7 +27,7 @@ const ReferralSchema = new Schema({
 		type: String
 	},
 	scrappedDate: {
-		type: Date
+		type: String
 	}
 });
 
@@ -51,4 +51,8 @@ module.exports.getReferrals = function(subAcctId, callback) {
 	Referral.find({ subAcctId: subAcctId })
 		.sort({ _id: -1 })
 		.exec(callback);
+};
+
+module.exports.deleteReferrals = function() {
+	Referral.remove({}).exec();
 };
