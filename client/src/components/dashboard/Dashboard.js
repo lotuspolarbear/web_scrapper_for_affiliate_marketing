@@ -41,55 +41,77 @@ class Dashboard extends Component {
 		flag2: true
 	};
 
-	async componentDidMount() {
-		await axios.get("/api/merchants/getAllMerchants").then(res => {
-			if (res.data.length === 0) {
-				this.setState({ merchants: "no result" });
-			} else {
-				this.setState({
-					merchants: res.data.map(merchant => {
-						return { value: merchant._id, name: merchant.name };
-					})
-				});
-				this.setState({ selectedMerchantId: this.state.merchants[0].value });
-			}
-		});
-		await axios.get("/api/subaccounts/getAllSubAccounts").then(res => {
-			if (res.data.length === 0) {
-				this.setState({ subAccounts: "no result" });
-			} else {
-				this.setState({
-					subAccounts: res.data.map(account => {
-						if(this.state.flag && account.merchantId === this.state.selectedMerchantId){
-							this.setState({ flag: false, selectedAccountId: account._id });
-						}
-						return { value: account._id, name: account.name, merchant_id: account.merchantId };
-					})
-				});
-				
-			}
-		});
-		this.setState({flag: true});
+	constructor(props){
+		super(props);
+		this.mounted = true;
 	}
 
+	componentWillUnmount(){
+		this.mounted = false;
+	  }
+
+	async componentDidMount() {
+		if(this.mounted){
+			await axios.get("/api/merchants/getAllMerchants").then(res => {
+				if (res.data.length === 0) {
+					this.setState({ merchants: "no result" });
+				} else {
+					this.setState({
+						merchants: res.data.map(merchant => {
+							return { value: merchant._id, name: merchant.name };
+						})
+					});
+					this.setState({ selectedMerchantId: this.state.merchants[0].value });
+				}
+			});
+			await axios.get("/api/subaccounts/getAllSubAccounts").then(res => {
+				if (res.data.length === 0) {
+					this.setState({ subAccounts: "no result" });
+				} else {
+					var flag = true;
+					this.setState({
+						subAccounts: res.data.map(account => {
+							if(flag && account.merchantId === this.state.selectedMerchantId){
+								flag = false;
+								this.setState({ flag: false, selectedAccountId: account._id });
+							}
+							return { value: account._id, name: account.name, merchant_id: account.merchantId };
+						})
+					});
+				}
+			});
+			this.setState({flag: true});
+		}
+	}
+
+	
+
 	handleTabChange = (event, value) => {
-		this.setState({ value });
+		if(this.state.value !== value){
+			this.setState({ value });
+		}
+		
 	};
 
 	accountChanged = (event, value) => {
 		this.setState({ selectedAccountId: event.target.value });
 	};
 
-	merchantChanged = (event, value) => {
+	merchantChanged = async (event, value) => {
+		var old_selected_account_id = this.state.selectedAccountId;
 		this.setState({selectedMerchantId: event.target.value});
 		var selectedMerchantId = event.target.value;
-		this.state.subAccounts.map(account => {
-			if(this.state.flag2 && account.merchant_id === selectedMerchantId){
-				this.setState({flag2: false, selectedAccountId: account.value });
+		var flag = true;
+		await this.state.subAccounts.map(account => {
+			if(flag && account.merchant_id === selectedMerchantId){
+				this.setState({ selectedAccountId: account.value });
+				flag = false;
 			}
 		});
 		
-		this.setState({flag2: true});
+		if(this.state.selectedAccountId !== "" && old_selected_account_id === this.state.selectedAccountId){
+			await this.setState({selectedAccountId: ""});
+		}
 	};
 
 	render() {
@@ -100,13 +122,13 @@ class Dashboard extends Component {
 			this.state.subAccounts && (
 				<div className='container'>
 					<div className='form-group row justify-content-end'>
-						<div className='col-md-3 offset-md-3'>
+						<div className='col-md-4 offset-md-4'>
 							<div className='row'>
-								<label htmlFor='name' className='col-sm-6 col-form-label text-right'>
+								<label htmlFor='name' className='col-md-4 col-form-label text-right'>
 									Marchants
 								</label>
-								<div className='col-md-6'>
-									<Input md={8} type='select' onChange={this.merchantChanged}>
+								<div className='col-md-8'>
+									<Input type='select' onChange={this.merchantChanged}>
 										{this.state.merchants.map(merchant => (
 											<option key={merchant.value} value={merchant.value}>
 												{merchant.name}
@@ -116,13 +138,13 @@ class Dashboard extends Component {
 								</div>
 							</div>
 						</div>
-						<div className='col-md-3'>
+						<div className='col-md-4'>
 							<div className='row'>
-								<label htmlFor='name' className='col-sm-6 col-form-label text-right'>
+								<label htmlFor='name' className='col-md-4 col-form-label text-right'>
 									Sub Accounts
 								</label>
-								<div className='col-md-6'>
-									<Input md={8} type='select' onChange={this.accountChanged}>
+								<div className='col-md-8'>
+									<Input type='select' onChange={this.accountChanged}>
 										{this.state.subAccounts.map(account => (
 											(this.state.selectedMerchantId === account.merchant_id) && <option key={account.value} value={account.value}>
 												{account.name}

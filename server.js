@@ -16,8 +16,8 @@ const app = express();
 app.use(bodyParser.json());
 
 // DB Config
-//const db = require('./config/db').mongoURI;
-const db = require("./config/key").mongoURI;
+const db = require('./config/db').mongoURI;
+//const db = require("./config/key").mongoURI;
 
 // Connect to Mongo
 mongoose
@@ -32,7 +32,7 @@ app.use("/api/statistics", statistics);
 app.use("/api/referrals", referrals);
 app.use("/api/visits", visits);
 
-crons.prepareCron();
+// crons.prepareCron();
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {

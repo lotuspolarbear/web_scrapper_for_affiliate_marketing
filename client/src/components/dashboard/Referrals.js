@@ -141,30 +141,46 @@ class Referrals extends React.Component {
 		page: 0,
 		rowsPerPage: 20,
 		tableData: [],
-		selectedId: ""
+		selectedId: "",
+		isLoading: false
 	};
 
+	constructor(props){
+		super(props);
+		this.mounted = true;
+	}
+
+	componentWillUnmount(){
+		this.mounted = false;
+	  }
+
 	async componentDidMount() {
-		if (this.props.id) {
-			await axios.post("/api/referrals/getReferrals", { subAcctId: this.props.id }).then(res => {
-				this.setState({
-					tableData: res.data.referrals,
-					page: 0
+		if(this.mounted){
+			if (this.props.id) {
+				await this.setState({isLoading: true});
+				await axios.post("/api/referrals/getReferrals", { subAcctId: this.props.id }).then(res => {
+					this.setState({
+						tableData: res.data.referrals,
+						page: 0,
+						isLoading: false
+					});
 				});
-			});
+			}
 		}
 	}
 
 	async componentWillReceiveProps(nextProps) {
 		if (nextProps.id !== "" && this.state.selectedId !== nextProps.id) {
-			await this.setState({ selectedId: nextProps.id });
+			await this.setState({ selectedId: nextProps.id, isLoading: true });
 			await axios.post("/api/referrals/getReferrals", { subAcctId: this.props.id }).then(res => {
 				this.setState({
 					tableData: res.data.referrals,
-					page: 0
+					page: 0,
+					isLoading: false
 				});
 			});
-
+		}else if(nextProps.id === ""){
+			await this.setState({ selectedId: "", tableData: [], page: 0, isLoading: false });
 		}
 	}
 
@@ -183,7 +199,14 @@ class Referrals extends React.Component {
 
 		return (
 			<Paper className={classes.root}>
-				<div className={classes.tableWrapper}>
+				{this.state.isLoading &&
+					<div className="col-md-4 offset-md-4" style={{textAlign: "center", fontSize: 20, padding: 40}}>
+						<div className="spinner-border" style={{width: "3rem", height: "3rem"}} role="status">
+							<span className="sr-only">Loading...</span>
+						</div>
+					</div>
+				}
+				{this.state.tableData.length !== 0 && !this.state.isLoading && <div className={classes.tableWrapper}>
 					<Table className={classes.table}>
 						<TableHead>
 							<TableRow>
@@ -241,7 +264,13 @@ class Referrals extends React.Component {
 							</TableRow>
 						</TableFooter>
 					</Table>
-				</div>
+				</div>}
+				
+				{this.state.tableData.length === 0 && !this.state.isLoading && <div className="row">
+					<div className="col-md-4 offset-md-4" style={{textAlign: "center", fontSize: 20, padding: 40}}>
+						No Data
+					</div>
+				</div>}
 			</Paper>
 		);
 	}
