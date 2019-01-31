@@ -9,6 +9,7 @@ const subaccounts = require("./routes/api/subaccounts");
 const statistics = require("./routes/api/statistics");
 const referrals = require("./routes/api/referrals");
 const visits = require("./routes/api/visits");
+const payouts = require("./routes/api/payouts");
 
 const app = express();
 
@@ -16,8 +17,8 @@ const app = express();
 app.use(bodyParser.json());
 
 // DB Config
-const db = require('./config/db').mongoURI;
-//const db = require("./config/key").mongoURI;
+//const db = require('./config/db').mongoURI;
+const db = require("./config/key").mongoURI;
 
 // Connect to Mongo
 mongoose
@@ -31,6 +32,7 @@ app.use("/api/subaccounts", subaccounts);
 app.use("/api/statistics", statistics);
 app.use("/api/referrals", referrals);
 app.use("/api/visits", visits);
+app.use("/api/payouts", payouts);
 
 // crons.prepareCron();
 

@@ -274,7 +274,6 @@ class Visits extends React.Component {
 						No Data
 					</div>
 				</div>}
-			}
 			</Paper>
 		);
 	}

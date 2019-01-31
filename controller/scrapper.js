@@ -6,6 +6,7 @@ const date = require('date-and-time');
 const Statistic = require("../models/Statistic");
 const Referral = require("../models/Referral");
 const Visit = require("../models/Visit");
+const Visit = require("../models/Payout");
 
 module.exports.doScrape = function(account) {
 
