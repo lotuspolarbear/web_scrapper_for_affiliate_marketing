@@ -1,19 +1,18 @@
 "use strict";
 const cheerio = require("cheerio");
 const puppeteer = require("puppeteer");
-const date = require('date-and-time');
+const date = require("date-and-time");
 
 const Statistic = require("../models/Statistic");
 const Referral = require("../models/Referral");
 const Visit = require("../models/Visit");
-const Visit = require("../models/Payout");
+const Payout = require("../models/Payout");
 
 module.exports.doScrape = function(account) {
-
 	async function statisticsScrap(browser, cookies) {
 		const statisticsPage = await browser.newPage();
 		await statisticsPage.setCookie(...cookies);
-		await statisticsPage.goto(account.loginUrl + "?tab=stats", {waitUntil: 'networkidle0', timeout: 0});
+		await statisticsPage.goto(account.loginUrl + "?tab=stats", { waitUntil: "networkidle0", timeout: 0 });
 		var html = await statisticsPage.content();
 		let $ = cheerio.load(html);
 		let tds = [];
@@ -48,44 +47,76 @@ module.exports.doScrape = function(account) {
 			paidEarnings: paidEarnings,
 			commissionRate: commissionRate,
 			statisticsTable: statisticsTable,
-			scrappedDate: date.format(new Date(), 'MMMM DD, YYYY hh:mm:ss A')
+			scrappedDate: date.format(new Date(), "MMMM DD, YYYY hh:mm:ss A")
 		});
-		Statistic.addStatistics(data, (err, changed) => {console.log("Statistics added for " + account.username)});
+		Statistic.addStatistics(data, (err, changed) => {
+			console.log("Statistics added for " + account.username);
+		});
 	}
 
-	async function referralsScrap(browser, cookies){
+	async function referralsScrap(browser, cookies) {
 		let lastRef;
 		let newRefs = [];
 
 		await Referral.find({ subAcctId: account._id })
-		.sort({ _id: -1 })
-		.limit(1)
-		.then(doc => lastRef = doc);
+			.sort({ _id: -1 })
+			.limit(1)
+			.then(doc => (lastRef = doc));
 
 		const referralsPage = await browser.newPage();
 		await referralsPage.setCookie(...cookies);
 		var pageNumber = 1;
 		var scrapFlag = true;
-		while(scrapFlag){
-			await referralsPage.goto(account.loginUrl + "/page/" + pageNumber.toString() + "?tab=referrals#affwp-affiliate-dashboard-referrals", {waitUntil: 'networkidle0', timeout: 0});
+		while (scrapFlag) {
+			await referralsPage.goto(
+				account.loginUrl +
+					"/page/" +
+					pageNumber.toString() +
+					"?tab=referrals#affwp-affiliate-dashboard-referrals",
+				{ waitUntil: "networkidle0", timeout: 0 }
+			);
 			var html = await referralsPage.content();
 			let $ = cheerio.load(html);
-			
+
 			var rows = $("tbody tr");
-			
-			if(rows.length == 1){
+
+			if (rows.length == 1) {
 				scrapFlag = false;
 			} else {
 				for (var i = 0; i < rows.length; i++) {
 					var current = rows[i];
-					var refferId = $(current).children("td.referral-reference").text();
-					var amount = $(current).children("td.referral-amount").text();
-					var description = $(current).children("td.referral-description").text();
-					var status = $(current).children("td.referral-status").text();
-					var refDate = $(current).children("td.referral-date").text();
-					var variationId = description.lastIndexOf("Variation ID") === -1 ? "" : description.substring(description.lastIndexOf("Variation ID") + 12, description.length-1);
-					
-					if((lastRef.length > 0) && (lastRef[0].refferId == refferId) && (lastRef[0].amount == amount) && (lastRef[0].description == description) && (lastRef[0].status == status) && (lastRef[0].refDate == refDate) && (lastRef[0].variationId == variationId)){
+					var refferId = $(current)
+						.children("td.referral-reference")
+						.text();
+					var amount = $(current)
+						.children("td.referral-amount")
+						.text();
+					var description = $(current)
+						.children("td.referral-description")
+						.text();
+					var status = $(current)
+						.children("td.referral-status")
+						.text();
+					var refDate = $(current)
+						.children("td.referral-date")
+						.text();
+					var variationId =
+						description.lastIndexOf("Variation ID") === -1
+							? ""
+							: description.substring(
+									description.lastIndexOf("Variation ID") + 12,
+									description.length - 1
+							  );
+
+					if (
+						lastRef.length > 0 &&
+						lastRef[0].refferId == refferId &&
+						lastRef[0].amount == amount &&
+						lastRef[0].description == description &&
+						lastRef[0].status == status &&
+						lastRef[0].refDate == refDate &&
+						lastRef[0].variationId == variationId
+					) {
 						console.log("Last referral document found.");
 						scrapFlag = false;
 						break;
@@ -98,51 +129,72 @@ module.exports.doScrape = function(account) {
 							description: description,
 							status: status,
 							refDate: refDate,
-							scrappedDate: date.format(new Date(), 'MMMM DD, YYYY hh:mm:ss A')
-						}
+							scrappedDate: date.format(new Date(), "MMMM DD, YYYY hh:mm:ss A")
+						};
 						newRefs.push(data);
 					}
 				}
 				pageNumber++;
-			}			
+			}
 		}
-		for(var i = newRefs.length - 1; i > -1 ; i--){
+		for (var i = newRefs.length - 1; i > -1; i--) {
 			Referral.addReferral(newRefs[i]);
 		}
 		console.log(newRefs.length + " referrals are added to " + account.username);
 	}
 
-	async function visitsScrap(browser, cookies){
+	async function visitsScrap(browser, cookies) {
 		let lastVisit;
 		let newVisits = [];
 
 		await Visit.find({ subAcctId: account._id })
-		.sort({ _id: -1 })
-		.limit(1)
-		.then(doc => lastVisit = doc);
+			.sort({ _id: -1 })
+			.limit(1)
+			.then(doc => (lastVisit = doc));
 
 		const visitsPage = await browser.newPage();
 		await visitsPage.setCookie(...cookies);
 		var pageNumber = 1;
 		var scrapFlag = true;
-		while(scrapFlag){
-			await visitsPage.goto(account.loginUrl + "/page/" + pageNumber.toString() + "?tab=visits#affwp-affiliate-dashboard-visits", {waitUntil: 'networkidle0', timeout: 0});
+		while (scrapFlag) {
+			await visitsPage.goto(
+				account.loginUrl + "/page/" + pageNumber.toString() + "?tab=visits#affwp-affiliate-dashboard-visits",
+				{ waitUntil: "networkidle0", timeout: 0 }
+			);
 			var html = await visitsPage.content();
 			let $ = cheerio.load(html);
-			
+
 			var rows = $("tbody tr");
-			
-			if(rows.length == 1){
+
+			if (rows.length == 1) {
 				scrapFlag = false;
 			} else {
 				for (var i = 0; i < rows.length; i++) {
-					var current = rows[i];					
-					var url = $($(current).children("td[data-th='URL']")).children('a[href]').text().trim();
-					var href = $($(current).children("td[data-th='URL']")).children('a[href]').attr('href').trim();
-					var referUrl = $(current).children("td[data-th='Referring URL']").text();
-					var convStatus = $($(current).children("td[data-th='Converted']")).children('.yes').length;
-					var visitDate = $(current).children("td[data-th='Date']").text().trim();
-					if((lastVisit.length > 0) && (lastVisit[0].url == url) && (lastVisit[0].href == href) && (lastVisit[0].referUrl == referUrl) && (lastVisit[0].convStatus == convStatus)  && (lastVisit[0].visitDate == visitDate)){
+					var current = rows[i];
+					var url = $($(current).children("td[data-th='URL']"))
+						.children("a[href]")
+						.text()
+						.trim();
+					var href = $($(current).children("td[data-th='URL']"))
+						.children("a[href]")
+						.attr("href")
+						.trim();
+					var referUrl = $(current)
+						.children("td[data-th='Referring URL']")
+						.text();
+					var convStatus = $($(current).children("td[data-th='Converted']")).children(".yes").length;
+					var visitDate = $(current)
+						.children("td[data-th='Date']")
+						.text()
+						.trim();
+					if (
+						lastVisit.length > 0 &&
+						lastVisit[0].url == url &&
+						lastVisit[0].href == href &&
+						lastVisit[0].referUrl == referUrl &&
+						lastVisit[0].convStatus == convStatus &&
+						lastVisit[0].visitDate == visitDate
+					) {
 						console.log("Last visit document found.");
 						scrapFlag = false;
 						break;
@@ -154,26 +206,98 @@ module.exports.doScrape = function(account) {
 							referUrl: referUrl,
 							convStatus: convStatus,
 							visitDate: visitDate,
-							scrappedDate: date.format(new Date(), 'MMMM DD, YYYY hh:mm:ss A')
-						}
+							scrappedDate: date.format(new Date(), "MMMM DD, YYYY hh:mm:ss A")
+						};
 						newVisits.push(data);
 					}
 				}
 				pageNumber++;
-				if(pageNumber > 70) scrapFlag = false;
+				if (pageNumber > 70) scrapFlag = false;
 			}
 		}
-		for(var i = newVisits.length - 1; i > -1 ; i--){
+		for (var i = newVisits.length - 1; i > -1; i--) {
 			Visit.addVisit(newVisits[i]);
 		}
 		console.log(newVisits.length + " visits are added to " + account.username);
 	}
-	
+
+	async function payoutsScrap(browser, cookies) {
+		let lastPayout;
+		let newPayouts = [];
+
+		await Payout.find({ subAcctId: account._id })
+			.sort({ _id: -1 })
+			.limit(1)
+			.then(doc => (lastPayout = doc));
+
+		const payoutsPage = await browser.newPage();
+		await payoutsPage.setCookie(...cookies);
+		var pageNumber = 1;
+		var scrapFlag = true;
+		while (scrapFlag) {
+			await payoutsPage.goto(
+				account.loginUrl + "/page/" + pageNumber.toString() + "?tab=payouts#affwp-affiliate-dashboard-payouts",
+				{ waitUntil: "networkidle0", timeout: 0 }
+			);
+			var html = await payoutsPage.content();
+			let $ = cheerio.load(html);
+
+			var rows = $("tbody tr");
+
+			if (rows.length == 1) {
+				scrapFlag = false;
+			} else {
+				for (var i = 0; i < rows.length; i++) {
+					var current = rows[i];
+					var payoutDate = $($(current).children("td[data-th='Date']"))
+						.text()
+						.trim();
+					var amount = $($(current).children("td[data-th='Amount']"))
+						.text()
+						.trim();
+					var payoutMethod = $($(current).children("td[data-th='Payout Method']"))
+						.text()
+						.trim();
+					var status = $($(current).children("td[data-th='Status']"))
+						.text()
+						.trim();
+					if (
+						lastPayout.length > 0 &&
+						lastPayout[0].payoutDate == payoutDate &&
+						lastPayout[0].amount == amount &&
+						lastPayout[0].payoutMethod == payoutMethod &&
+						lastPayout[0].status == status
+					) {
+						console.log("Last payout document found.");
+						scrapFlag = false;
+						break;
+					} else {
+						var data = {
+							subAcctId: account._id,
+							payoutDate: payoutDate,
+							amount: amount,
+							payoutMethod: payoutMethod,
+							status: status,
+							scrappedDate: date.format(new Date(), "MMMM DD, YYYY hh:mm:ss A")
+						};
+						newPayouts.push(data);
+					}
+				}
+				pageNumber++;
+				if (pageNumber > 70) scrapFlag = false;
+			}
+		}
+		for (var i = newPayouts.length - 1; i > -1; i--) {
+			Payout.addPayout(newPayouts[i]);
+		}
+		console.log(newPayouts.length + " payouts are added to " + account.username);
+	}
+
 	async function run() {
 		const browser = await puppeteer.launch({ headless: false });
 		const loginPage = await browser.newPage();
 
-		await loginPage.goto(account.loginUrl, {waitUntil: 'networkidle0', timeout: 0});
+		await loginPage.goto(account.loginUrl, { waitUntil: "networkidle0", timeout: 0 });
 
 		const USERNAME_SELECTOR = "#affwp-login-user-login";
 		const PASSWORD_SELECTOR = "#affwp-login-user-pass";
@@ -189,9 +313,10 @@ module.exports.doScrape = function(account) {
 		await loginPage.waitForNavigation();
 
 		const cookies = await loginPage.cookies();
-		statisticsScrap(browser, cookies);
-		referralsScrap(browser, cookies);
-		visitsScrap(browser, cookies);
+		// statisticsScrap(browser, cookies);
+		// referralsScrap(browser, cookies);
+		// visitsScrap(browser, cookies);
+		payoutsScrap(browser, cookies);
 	}
 
 	run();
