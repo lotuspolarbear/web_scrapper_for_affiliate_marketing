@@ -69,7 +69,6 @@ class Dashboard extends Component {
 					this.setState({ subAccounts: "no result" });
 				} else {
 					var flag = true;
-					console.log(res.data);
 					this.setState({
 						subAccounts: res.data.map(account => {
 							// if (flag && account.merchantId === this.state.selectedMerchantId) {

@@ -50,7 +50,7 @@ module.exports.doScrape = function(account) {
 			scrappedDate: date.format(new Date(), "MM-DD-YY HH:mm")
 		});
 		Statistic.addStatistics(data, (err, changed) => {
-			console.log("Statistics added for " + account.username);
+			console.log("Statistics added to " + account.username);
 		});
 	}
 
@@ -141,7 +141,7 @@ module.exports.doScrape = function(account) {
 		for (var i = newRefs.length - 1; i > -1; i--) {
 			Referral.addReferral(newRefs[i]);
 		}
-		console.log(newRefs.length + " referrals are added to " + account.username);
+		console.log(newRefs.length + " referrals added to " + account.username);
 	}
 
 	async function visitsScrap(browser, cookies) {
@@ -219,7 +219,7 @@ module.exports.doScrape = function(account) {
 		for (var i = newVisits.length - 1; i > -1; i--) {
 			Visit.addVisit(newVisits[i]);
 		}
-		console.log(newVisits.length + " visits are added to " + account.username);
+		console.log(newVisits.length + " visits added to " + account.username);
 	}
 
 	async function payoutsScrap(browser, cookies) {
@@ -291,7 +291,7 @@ module.exports.doScrape = function(account) {
 		for (var i = newPayouts.length - 1; i > -1; i--) {
 			Payout.addPayout(newPayouts[i]);
 		}
-		console.log(newPayouts.length + " payouts are added to " + account.username);
+		console.log(newPayouts.length + " payouts added to " + account.username);
 	}
 
 	async function run() {
