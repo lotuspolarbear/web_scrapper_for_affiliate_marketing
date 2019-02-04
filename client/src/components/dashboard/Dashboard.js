@@ -34,24 +34,24 @@ class Dashboard extends Component {
 		value: 0,
 		subAccounts: [],
 		merchants: [],
-		new_merchants:[],
+		new_merchants: [],
 		selectedAccountId: "",
 		selectedMerchantId: "",
 		flag: true,
 		flag2: true
 	};
 
-	constructor(props){
+	constructor(props) {
 		super(props);
 		this.mounted = true;
 	}
 
-	componentWillUnmount(){
+	componentWillUnmount() {
 		this.mounted = false;
-	  }
+	}
 
 	async componentDidMount() {
-		if(this.mounted){
+		if (this.mounted) {
 			await axios.get("/api/merchants/getAllMerchants").then(res => {
 				if (res.data.length === 0) {
 					this.setState({ merchants: "no result" });
@@ -69,28 +69,42 @@ class Dashboard extends Component {
 					this.setState({ subAccounts: "no result" });
 				} else {
 					var flag = true;
+					console.log(res.data);
 					this.setState({
 						subAccounts: res.data.map(account => {
-							if(flag && account.merchantId === this.state.selectedMerchantId){
+							// if (flag && account.merchantId === this.state.selectedMerchantId) {
+							// 	flag = false;
+							// 	this.setState({ flag: false, selectedAccountId: account._id });
+							// }
+
+							if (flag) {
 								flag = false;
 								this.setState({ flag: false, selectedAccountId: account._id });
 							}
-							return { value: account._id, name: account.name, merchant_id: account.merchantId };
+							var subAccount = {};
+							subAccount.value = account._id;
+							subAccount.name = account.name;
+							subAccount.merchant_id = account.merchantId;
+
+							this.state.merchants.map(merchant => {
+								if (account.merchant_id === merchant._id) {
+									subAccount.merchant_name = merchant.name;
+								}
+							});
+
+							return subAccount;
 						})
 					});
 				}
 			});
-			this.setState({flag: true});
+			this.setState({ flag: true });
 		}
 	}
 
-	
-
 	handleTabChange = (event, value) => {
-		if(this.state.value !== value){
+		if (this.state.value !== value) {
 			this.setState({ value });
 		}
-		
 	};
 
 	accountChanged = (event, value) => {
@@ -99,18 +113,18 @@ class Dashboard extends Component {
 
 	merchantChanged = async (event, value) => {
 		var old_selected_account_id = this.state.selectedAccountId;
-		this.setState({selectedMerchantId: event.target.value});
+		this.setState({ selectedMerchantId: event.target.value });
 		var selectedMerchantId = event.target.value;
 		var flag = true;
 		await this.state.subAccounts.map(account => {
-			if(flag && account.merchant_id === selectedMerchantId){
+			if (flag && account.merchant_id === selectedMerchantId) {
 				this.setState({ selectedAccountId: account.value });
 				flag = false;
 			}
 		});
-		
-		if(this.state.selectedAccountId !== "" && old_selected_account_id === this.state.selectedAccountId){
-			await this.setState({selectedAccountId: ""});
+
+		if (this.state.selectedAccountId !== "" && old_selected_account_id === this.state.selectedAccountId) {
+			await this.setState({ selectedAccountId: "" });
 		}
 	};
 
@@ -122,7 +136,7 @@ class Dashboard extends Component {
 			this.state.subAccounts && (
 				<div className='container'>
 					<div className='form-group row justify-content-end'>
-						<div className='col-md-4 offset-md-4'>
+						{/* <div className='col-md-4 offset-md-4'>
 							<div className='row'>
 								<label htmlFor='name' className='col-md-4 col-form-label text-right'>
 									Marchants
@@ -137,8 +151,8 @@ class Dashboard extends Component {
 									</Input>
 								</div>
 							</div>
-						</div>
-						<div className='col-md-4'>
+						</div> */}
+						<div className='col-md-8'>
 							<div className='row'>
 								<label htmlFor='name' className='col-md-4 col-form-label text-right'>
 									Sub Accounts
@@ -146,8 +160,8 @@ class Dashboard extends Component {
 								<div className='col-md-8'>
 									<Input type='select' onChange={this.accountChanged}>
 										{this.state.subAccounts.map(account => (
-											(this.state.selectedMerchantId === account.merchant_id) && <option key={account.value} value={account.value}>
-												{account.name}
+											<option key={account.value} value={account.value}>
+												{account.merchant_name} - {account.name}
 											</option>
 										))}
 									</Input>

@@ -56,7 +56,7 @@ module.exports.addStatistics = function(data, callback) {
 			if (!record) {
 				data.save(callback);
 			} else {
-				console.log("Statistics not update for "+ data.subAcctId);
+				console.log("Statistics not update for " + data.subAcctId);
 			}
 		}
 	);

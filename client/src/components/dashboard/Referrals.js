@@ -145,19 +145,19 @@ class Referrals extends React.Component {
 		isLoading: false
 	};
 
-	constructor(props){
+	constructor(props) {
 		super(props);
 		this.mounted = true;
 	}
 
-	componentWillUnmount(){
+	componentWillUnmount() {
 		this.mounted = false;
-	  }
+	}
 
 	async componentDidMount() {
-		if(this.mounted){
+		if (this.mounted) {
 			if (this.props.id) {
-				await this.setState({isLoading: true});
+				await this.setState({ isLoading: true });
 				await axios.post("/api/referrals/getReferrals", { subAcctId: this.props.id }).then(res => {
 					this.setState({
 						tableData: res.data.referrals,
@@ -179,7 +179,7 @@ class Referrals extends React.Component {
 					isLoading: false
 				});
 			});
-		}else if(nextProps.id === ""){
+		} else if (nextProps.id === "") {
 			await this.setState({ selectedId: "", tableData: [], page: 0, isLoading: false });
 		}
 	}
@@ -199,78 +199,99 @@ class Referrals extends React.Component {
 
 		return (
 			<Paper className={classes.root}>
-				{this.state.isLoading &&
-					<div className="col-md-4 offset-md-4" style={{textAlign: "center", fontSize: 20, padding: 40}}>
-						<div className="spinner-border" style={{width: "3rem", height: "3rem"}} role="status">
-							<span className="sr-only">Loading...</span>
+				{this.state.isLoading && (
+					<div className='col-md-4 offset-md-4' style={{ textAlign: "center", fontSize: 20, padding: 40 }}>
+						<div className='spinner-border' style={{ width: "3rem", height: "3rem" }} role='status'>
+							<span className='sr-only'>Loading...</span>
 						</div>
 					</div>
-				}
-				{this.state.tableData.length !== 0 && !this.state.isLoading && <div className={classes.tableWrapper}>
-					<Table className={classes.table}>
-						<TableHead>
-							<TableRow>
-								<CustomTableCell padding='checkbox' align='center'>Reference</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>Amount</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>Variation ID</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center' width="400px">Description</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>Status</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center' width="130px">Date</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center' width="130px">Scrapped Date</CustomTableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-								<TableRow className={classes.row} key={row.refferId}>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.refferId}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										${row.amount}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.variationId}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='left'>
-										{row.description}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.status}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.refDate}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.scrappedDate}
-									</TableCell>
+				)}
+				{this.state.tableData.length !== 0 && !this.state.isLoading && (
+					<div className={classes.tableWrapper}>
+						<Table className={classes.table}>
+							<TableHead>
+								<TableRow>
+									<CustomTableCell padding='checkbox' align='center'>
+										Reference
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center'>
+										Amount
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center'>
+										Variation ID
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center' width='400px'>
+										Description
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center'>
+										Status
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center' width='130px'>
+										Date
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center' width='130px'>
+										Scrapped Date
+									</CustomTableCell>
 								</TableRow>
-							))}
-						</TableBody>
-						<TableFooter>
-							<TableRow>
-								<TablePagination
-									rowsPerPageOptions={[20, 30, 50, 100]}
-									colSpan={6}
-									count={tableData.length}
-									rowsPerPage={rowsPerPage}
-									page={page}
-									// SelectProps={{
-									// 	native: true
-									// }}
-									onChangePage={this.handleChangePage}
-									onChangeRowsPerPage={this.handleChangeRowsPerPage}
-									ActionsComponent={TablePaginationActionsWrapped}
-								/>
-							</TableRow>
-						</TableFooter>
-					</Table>
-				</div>}
-				
-				{this.state.tableData.length === 0 && !this.state.isLoading && <div className="row">
-					<div className="col-md-4 offset-md-4" style={{textAlign: "center", fontSize: 20, padding: 40}}>
-						No Data
+							</TableHead>
+							<TableBody>
+								{tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+									<TableRow className={classes.row} key={row.refferId}>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											{row.refferId}
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											${row.amount}
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											{row.variationId}
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='left'>
+											{row.description}
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											{row.status}
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											{row.refDate}
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											{row.scrappedDate}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+							<TableFooter>
+								<TableRow>
+									<TablePagination
+										rowsPerPageOptions={[20, 30, 50, 100]}
+										colSpan={6}
+										count={tableData.length}
+										rowsPerPage={rowsPerPage}
+										page={page}
+										// SelectProps={{
+										// 	native: true
+										// }}
+										onChangePage={this.handleChangePage}
+										onChangeRowsPerPage={this.handleChangeRowsPerPage}
+										ActionsComponent={TablePaginationActionsWrapped}
+									/>
+								</TableRow>
+							</TableFooter>
+						</Table>
 					</div>
-				</div>}
+				)}
+
+				{this.state.tableData.length === 0 && !this.state.isLoading && (
+					<div className='row'>
+						<div
+							className='col-md-4 offset-md-4'
+							style={{ textAlign: "center", fontSize: 20, padding: 40 }}
+						>
+							No Data
+						</div>
+					</div>
+				)}
 			</Paper>
 		);
 	}
