@@ -9,7 +9,7 @@ const PayoutSchema = new Schema({
 		required: true
 	},
 	amount: {
-		type: String
+		type: Number
 	},
 	payoutMethod: {
 		type: String
@@ -47,4 +47,5 @@ module.exports.getPayouts = function(subAcctId, callback) {
 
 module.exports.deletePayouts = function() {
 	Payout.remove({}).exec();
+	console.log("Payouts connection dropped successfully.");
 };

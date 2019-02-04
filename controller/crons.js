@@ -10,7 +10,7 @@ getAllSubAccounts = function() {
 		if (err) {
 			console.log("Can't get sub accounts to scrap.");
 		} else {
-			// Scrapper.doScrape(accounts[1]);
+			//Scrapper.doScrape(accounts[0]);
 			for (var i = 0; i < accounts.length; i++) {
 				Scrapper.doScrape(accounts[i]);
 			}
@@ -23,5 +23,5 @@ module.exports.prepareCron = function() {
 	//Referral.deleteReferrals();
 	//Visit.deleteVisits();
 	//Payout.deletePayouts();
-	// getAllSubAccounts();
+	getAllSubAccounts();
 };

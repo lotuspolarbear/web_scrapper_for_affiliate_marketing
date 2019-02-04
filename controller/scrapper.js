@@ -24,8 +24,8 @@ module.exports.doScrape = function(account) {
 		var paidReferrals = tds[1];
 		var visits = tds[2];
 		var convRate = tds[3];
-		var unpaidEarnings = tds[4];
-		var paidEarnings = tds[5];
+		var unpaidEarnings = parseFloat(tds[4].replace("$", "").replace(/,/g, ""));
+		var paidEarnings = parseFloat(tds[5].replace("$", "").replace(/,/g, ""));
 		var commissionRate = tds[6];
 		var statisticsTable = [];
 		for (var i = 7; i < tds.length; i += 5) {
@@ -47,7 +47,7 @@ module.exports.doScrape = function(account) {
 			paidEarnings: paidEarnings,
 			commissionRate: commissionRate,
 			statisticsTable: statisticsTable,
-			scrappedDate: date.format(new Date(), "MMMM DD, YYYY hh:mm:ss A")
+			scrappedDate: date.format(new Date(), "MM-DD-YY HH:mm")
 		});
 		Statistic.addStatistics(data, (err, changed) => {
 			console.log("Statistics added for " + account.username);
@@ -88,18 +88,18 @@ module.exports.doScrape = function(account) {
 					var refferId = $(current)
 						.children("td.referral-reference")
 						.text();
-					var amount = $(current)
+					var amount = parseFloat($(current)
 						.children("td.referral-amount")
-						.text();
+						.text().replace("$", "").replace(/,/g, ""));
 					var description = $(current)
 						.children("td.referral-description")
 						.text();
 					var status = $(current)
 						.children("td.referral-status")
 						.text();
-					var refDate = $(current)
+					var refDate = date.format(new Date($(current)
 						.children("td.referral-date")
-						.text();
+						.text()), "MM-DD-YY HH:mm");
 					var variationId =
 						description.lastIndexOf("Variation ID") === -1
 							? ""
@@ -129,12 +129,13 @@ module.exports.doScrape = function(account) {
 							description: description,
 							status: status,
 							refDate: refDate,
-							scrappedDate: date.format(new Date(), "MMMM DD, YYYY hh:mm:ss A")
+							scrappedDate: date.format(new Date(), "MM-DD-YY HH:mm")
 						};
 						newRefs.push(data);
 					}
 				}
 				pageNumber++;
+				//if (pageNumber > 1) scrapFlag = false;
 			}
 		}
 		for (var i = newRefs.length - 1; i > -1; i--) {
@@ -183,10 +184,10 @@ module.exports.doScrape = function(account) {
 						.children("td[data-th='Referring URL']")
 						.text();
 					var convStatus = $($(current).children("td[data-th='Converted']")).children(".yes").length;
-					var visitDate = $(current)
+					var visitDate = date.format(new Date($(current)
 						.children("td[data-th='Date']")
 						.text()
-						.trim();
+						.trim()), "MM-DD-YY HH:mm");
 					if (
 						lastVisit.length > 0 &&
 						lastVisit[0].url == url &&
@@ -206,13 +207,13 @@ module.exports.doScrape = function(account) {
 							referUrl: referUrl,
 							convStatus: convStatus,
 							visitDate: visitDate,
-							scrappedDate: date.format(new Date(), "MMMM DD, YYYY hh:mm:ss A")
+							scrappedDate: date.format(new Date(), "MM-DD-YY HH:mm")
 						};
 						newVisits.push(data);
 					}
 				}
 				pageNumber++;
-				if (pageNumber > 70) scrapFlag = false;
+				//if (pageNumber > 1) scrapFlag = false;
 			}
 		}
 		for (var i = newVisits.length - 1; i > -1; i--) {
@@ -249,12 +250,12 @@ module.exports.doScrape = function(account) {
 			} else {
 				for (var i = 0; i < rows.length; i++) {
 					var current = rows[i];
-					var payoutDate = $($(current).children("td[data-th='Date']"))
+					var payoutDate = date.format(new Date($($(current).children("td[data-th='Date']"))
 						.text()
-						.trim();
-					var amount = $($(current).children("td[data-th='Amount']"))
+						.trim()), "MM-DD-YY HH:mm");
+					var amount = parseFloat($($(current).children("td[data-th='Amount']"))
 						.text()
-						.trim();
+						.trim().replace("$", "").replace(/,/g, ""));
 					var payoutMethod = $($(current).children("td[data-th='Payout Method']"))
 						.text()
 						.trim();
@@ -278,13 +279,13 @@ module.exports.doScrape = function(account) {
 							amount: amount,
 							payoutMethod: payoutMethod,
 							status: status,
-							scrappedDate: date.format(new Date(), "MMMM DD, YYYY hh:mm:ss A")
+							scrappedDate: date.format(new Date(), "MM-DD-YY HH:mm")
 						};
 						newPayouts.push(data);
 					}
 				}
 				pageNumber++;
-				if (pageNumber > 70) scrapFlag = false;
+				//if (pageNumber > 1) scrapFlag = false;
 			}
 		}
 		for (var i = newPayouts.length - 1; i > -1; i--) {
@@ -313,9 +314,9 @@ module.exports.doScrape = function(account) {
 		await loginPage.waitForNavigation();
 
 		const cookies = await loginPage.cookies();
-		// statisticsScrap(browser, cookies);
-		// referralsScrap(browser, cookies);
-		// visitsScrap(browser, cookies);
+		statisticsScrap(browser, cookies);
+		referralsScrap(browser, cookies);
+		visitsScrap(browser, cookies);
 		payoutsScrap(browser, cookies);
 	}
 

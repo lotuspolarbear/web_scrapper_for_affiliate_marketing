@@ -105,8 +105,8 @@ const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: tru
 
 const styles = theme => ({
 	root: {
-		width: "100%"
-		// marginTop: theme.spacing.unit * 3
+		width: "100%",
+		marginTop: theme.spacing.unit * 3
 	},
 	table: {
 		minWidth: 500,
@@ -154,6 +154,10 @@ class Statistics extends React.Component {
 							isLoading: false,
 							selectedDate: new Date(res.data.statistic[0].scrappedDate.replace(".", ""))
 						});
+					}else{
+						this.setState({
+							isLoading: false
+						});
 					}
 				});
 			}
@@ -171,6 +175,10 @@ class Statistics extends React.Component {
 						page: 0,
 						isLoading: false,
 						selectedDate: new Date(res.data.statistic[0].scrappedDate.replace(".", ""))
+					});
+				}else{
+					this.setState({
+						isLoading: false
 					});
 				}
 				
@@ -292,16 +300,16 @@ class Statistics extends React.Component {
 																		<td style={{ color: "red" }}>{row.convRate}</td>
 																	)}
 																	{old.unpaidEarnings === row.unpaidEarnings && (
-																		<td>{row.unpaidEarnings}</td>
+																		<td>${row.unpaidEarnings}</td>
 																	)}
 																	{old.unpaidEarnings !== row.unpaidEarnings && (
-																		<td style={{ color: "red" }}>{row.unpaidEarnings}</td>
+																		<td style={{ color: "red" }}>${row.unpaidEarnings}</td>
 																	)}
 																	{old.paidEarnings === row.paidEarnings && (
-																		<td>{row.paidEarnings}</td>
+																		<td>${row.paidEarnings}</td>
 																	)}
 																	{old.paidEarnings !== row.paidEarnings && (
-																		<td style={{ color: "red" }}>{row.paidEarnings}</td>
+																		<td style={{ color: "red" }}>${row.paidEarnings}</td>
 																	)}
 																	{old.commissionRate === row.commissionRate && (
 																		<td>{row.commissionRate}</td>

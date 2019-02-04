@@ -51,4 +51,5 @@ module.exports.getVisits = function(subAcctId, callback) {
 
 module.exports.deleteVisits = function() {
 	Visit.remove({}).exec();
+	console.log("Visits connection dropped successfully.");
 };

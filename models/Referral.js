@@ -12,7 +12,7 @@ const ReferralSchema = new Schema({
 		type: String
 	},
 	amount: {
-		type: String
+		type: Number
 	},
 	variationId: {
 		type: String
@@ -55,4 +55,5 @@ module.exports.getReferrals = function(subAcctId, callback) {
 
 module.exports.deleteReferrals = function() {
 	Referral.remove({}).exec();
+	console.log("Referrals connection dropped successfully.");
 };

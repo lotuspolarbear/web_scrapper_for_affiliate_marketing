@@ -235,7 +235,7 @@ class Payouts extends React.Component {
 											{row.payoutDate}
 										</TableCell>
 										<TableCell padding='checkbox' className={classes.customFont} align='center'>
-											{row.amount}
+											${row.amount}
 										</TableCell>
 										<TableCell padding='checkbox' className={classes.customFont} align='center'>
 											{row.payoutMethod}

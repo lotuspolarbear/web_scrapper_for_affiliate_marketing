@@ -21,10 +21,10 @@ const StatisticSchema = new Schema({
 		type: String
 	},
 	unpaidEarnings: {
-		type: String
+		type: Number
 	},
 	paidEarnings: {
-		type: String
+		type: Number
 	},
 	commissionRate: {
 		type: String
@@ -68,4 +68,5 @@ module.exports.getStatistics = function(subAcctId, callback) {
 };
 module.exports.deleteStatistics = function() {
 	Statistic.remove({}).exec();
+	console.log("Statistics connection dropped successfully.");
 };

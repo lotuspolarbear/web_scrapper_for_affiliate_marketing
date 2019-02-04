@@ -213,10 +213,10 @@ class Referrals extends React.Component {
 								<CustomTableCell padding='checkbox' align='center'>Reference</CustomTableCell>
 								<CustomTableCell padding='checkbox' align='center'>Amount</CustomTableCell>
 								<CustomTableCell padding='checkbox' align='center'>Variation ID</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>Description</CustomTableCell>
+								<CustomTableCell padding='checkbox' align='center' width="400px">Description</CustomTableCell>
 								<CustomTableCell padding='checkbox' align='center'>Status</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>Date</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>Scrapped Date</CustomTableCell>
+								<CustomTableCell padding='checkbox' align='center' width="130px">Date</CustomTableCell>
+								<CustomTableCell padding='checkbox' align='center' width="130px">Scrapped Date</CustomTableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -226,12 +226,12 @@ class Referrals extends React.Component {
 										{row.refferId}
 									</TableCell>
 									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.amount}
+										${row.amount}
 									</TableCell>
 									<TableCell padding='checkbox' className={classes.customFont} align='center'>
 										{row.variationId}
 									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
+									<TableCell padding='checkbox' className={classes.customFont} align='left'>
 										{row.description}
 									</TableCell>
 									<TableCell padding='checkbox' className={classes.customFont} align='center'>
