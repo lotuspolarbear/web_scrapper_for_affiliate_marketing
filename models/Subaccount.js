@@ -47,6 +47,15 @@ const Subaccount = (module.exports = mongoose.model("Subaccount", SubaccountSche
 module.exports.addSubaccount = function(newSubaccount, callback) {
 	newSubaccount.save(callback);
 };
+
+module.exports.checkSubaccountName = function(requestedSubaccount, callback) {
+	Subaccount.findOne({ username: requestedSubaccount.username }, callback);
+};
+
+module.exports.checkSubaccount = function(requestedSubaccount, callback) {
+	Subaccount.findOne({ username: requestedSubaccount.username, password: requestedSubaccount.password }, callback);
+};
+
 module.exports.reSchedule = function(schedule, callback) {
 	Subaccount.findOneAndUpdate(
 		{ _id: schedule.accountId },

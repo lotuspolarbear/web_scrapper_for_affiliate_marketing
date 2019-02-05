@@ -16,7 +16,8 @@ import {
 
 class AppNavbar extends Component {
 	state = {
-		isOpen: false
+		isOpen: false,
+		isLoggedin: false
 	};
 	toggle = () => {
 		this.setState({
@@ -33,35 +34,49 @@ class AppNavbar extends Component {
 						<NavbarToggler onClick={this.toggle} />
 						<Collapse isOpen={this.state.isOpen} navbar>
 							<Nav className='ml-auto' navbar>
-								<NavItem>
-									<NavLink href='/dashboard/'>Dashboard</NavLink>
-								</NavItem>
-								<UncontrolledDropdown nav inNavbar>
-									<DropdownToggle nav caret>
-										Account Management
-									</DropdownToggle>
-									<DropdownMenu>
-										<DropdownItem tag='a' href='/merchant/management'>
-											Merchants
-										</DropdownItem>
-										<DropdownItem tag='a' href='/subaccount/management'>
-											Sub Accounts
-										</DropdownItem>
-									</DropdownMenu>
-								</UncontrolledDropdown>
-								<UncontrolledDropdown nav inNavbar>
-									<DropdownToggle nav caret>
-										Register
-									</DropdownToggle>
-									<DropdownMenu>
-										<DropdownItem tag='a' href='/merchant/register'>
-											Merchant
-										</DropdownItem>
-										<DropdownItem tag='a' href='/subaccount/register'>
-											Sub Account
-										</DropdownItem>
-									</DropdownMenu>
-								</UncontrolledDropdown>
+								{localStorage.getItem("subAccount") && (
+									<React.Fragment>
+										<NavItem>
+											<NavLink href='/dashboard/'>Dashboard</NavLink>
+										</NavItem>
+										<UncontrolledDropdown nav inNavbar>
+											<DropdownToggle nav caret>
+												Account Management
+											</DropdownToggle>
+											<DropdownMenu>
+												<DropdownItem tag='a' href='/merchant/management'>
+													Merchants
+												</DropdownItem>
+												<DropdownItem tag='a' href='/subaccount/management'>
+													Sub Accounts
+												</DropdownItem>
+											</DropdownMenu>
+										</UncontrolledDropdown>
+										<NavItem>
+											<NavLink href='/logout/'>Logout</NavLink>
+										</NavItem>
+									</React.Fragment>
+								)}
+								{!localStorage.getItem("subAccount") && (
+									<React.Fragment>
+										<UncontrolledDropdown nav inNavbar>
+											<DropdownToggle nav caret>
+												Register
+											</DropdownToggle>
+											<DropdownMenu>
+												<DropdownItem tag='a' href='/merchant/register'>
+													Merchant
+												</DropdownItem>
+												<DropdownItem tag='a' href='/subaccount/register'>
+													Sub Account
+												</DropdownItem>
+											</DropdownMenu>
+										</UncontrolledDropdown>
+										<NavItem>
+											<NavLink href='/login/'>Login</NavLink>
+										</NavItem>
+									</React.Fragment>
+								)}
 							</Nav>
 						</Collapse>
 					</Container>

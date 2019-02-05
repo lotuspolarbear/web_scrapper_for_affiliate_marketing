@@ -10,7 +10,6 @@ const statistics = require("./routes/api/statistics");
 const referrals = require("./routes/api/referrals");
 const visits = require("./routes/api/visits");
 const payouts = require("./routes/api/payouts");
-const date = require("date-and-time");
 const app = express();
 
 // Bodyparser Middleware
@@ -35,6 +34,7 @@ app.use("/api/visits", visits);
 app.use("/api/payouts", payouts);
 
 //crons.prepareCron();
+
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {
 	// Set static folder
