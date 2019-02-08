@@ -137,16 +137,16 @@ class Statistics extends React.Component {
 		this.mounted = true;
 	}
 
-	componentWillUnmount(){
+	componentWillUnmount() {
 		this.mounted = false;
 	}
 
 	async componentDidMount() {
-		if(this.mounted){
+		if (this.mounted) {
 			if (this.props.id) {
-				this.setState({isLoading: true});
+				this.setState({ isLoading: true });
 				await axios.post("/api/statistics/getStatistics", { subAcctId: this.props.id }).then(res => {
-					if(res.data.statistic.length > 0){
+					if (res.data.statistic.length > 0) {
 						this.setState({
 							tableData: res.data.statistic,
 							old: {},
@@ -154,8 +154,9 @@ class Statistics extends React.Component {
 							isLoading: false,
 							selectedDate: new Date(res.data.statistic[0].scrappedDate.replace(".", ""))
 						});
-					}else{
+					} else {
 						this.setState({
+							tableData: [],
 							isLoading: false
 						});
 					}
@@ -167,8 +168,9 @@ class Statistics extends React.Component {
 	async componentWillReceiveProps(nextProps) {
 		if (nextProps.id !== "") {
 			await this.setState({ selectedId: nextProps.id, old: {}, isLoading: true });
+
 			await axios.post("/api/statistics/getStatistics", { subAcctId: this.props.id }).then(res => {
-				if(res.data.statistic.length > 0){
+				if (res.data.statistic.length > 0) {
 					this.setState({
 						tableData: res.data.statistic,
 						old: {},
@@ -176,20 +178,20 @@ class Statistics extends React.Component {
 						isLoading: false,
 						selectedDate: new Date(res.data.statistic[0].scrappedDate.replace(".", ""))
 					});
-				}else{
+				} else {
 					this.setState({
+						tableData: [],
 						isLoading: false
 					});
 				}
-				
 			});
-		}else if(nextProps.id === ""){
+		} else if (nextProps.id === "") {
 			await this.setState({ selectedId: "", old: {}, tableData: [], page: 0, isLoading: false });
 		}
 	}
 
 	handleDateChange = async date => {
-		this.setState({isAvailable: false});
+		this.setState({ isAvailable: false });
 		await this.setState({ selectedDate: date });
 		var date = this.state.selectedDate;
 		var month = date.getUTCMonth() + 1; //months from 1-12
@@ -199,8 +201,8 @@ class Statistics extends React.Component {
 			var _month = new Date(data.scrappedDate.replace(".", "")).getUTCMonth() + 1; //months from 1-12
 			var _day = new Date(data.scrappedDate.replace(".", "")).getUTCDate();
 			var _year = new Date(data.scrappedDate.replace(".", "")).getUTCFullYear();
-			if(month === _month && day === _day && year === _year){
-				this.setState({page: key, isAvailable: true});
+			if (month === _month && day === _day && year === _year) {
+				this.setState({ page: key, isAvailable: true });
 				return;
 			}
 		});
@@ -209,7 +211,7 @@ class Statistics extends React.Component {
 	handleChangePage = async (event, page) => {
 		await this.setState({ page });
 		var date = await new Date(this.state.tableData[this.state.page].scrappedDate.replace(".", ""));
-		await this.setState({selectedDate: date});
+		await this.setState({ selectedDate: date });
 	};
 
 	handleChangeRowsPerPage = event => {
@@ -225,14 +227,14 @@ class Statistics extends React.Component {
 
 		return (
 			<Paper className={classes.root}>
-				{this.state.isLoading &&
-					<div className="col-md-4 offset-md-4" style={{textAlign: "center", fontSize: 20, padding: 40}}>
-						<div className="spinner-border" style={{width: "3rem", height: "3rem"}} role="status">
-							<span className="sr-only">Loading...</span>
+				{this.state.isLoading && (
+					<div className='col-md-4 offset-md-4' style={{ textAlign: "center", fontSize: 20, padding: 40 }}>
+						<div className='spinner-border' style={{ width: "3rem", height: "3rem" }} role='status'>
+							<span className='sr-only'>Loading...</span>
 						</div>
 					</div>
-				}
-				{this.state.tableData.length !== 0 && !this.state.isLoading &&
+				)}
+				{this.state.tableData.length !== 0 && !this.state.isLoading && (
 					<div className={classes.tableWrapper}>
 						<MuiPickersUtilsProvider utils={DateFnsUtils}>
 							<Grid container className={classes.grid} justify='flex-end'>
@@ -245,7 +247,7 @@ class Statistics extends React.Component {
 								/>
 							</Grid>
 						</MuiPickersUtilsProvider>
-						{this.state.isAvailable &&
+						{this.state.isAvailable && (
 							<Table className={classes.table}>
 								<TableBody>
 									<TableRow>
@@ -265,7 +267,10 @@ class Statistics extends React.Component {
 													<React.Fragment key={row.visits}>
 														<Table className='text-center' style={{ marginBottom: 30 }}>
 															<thead
-																style={{ backgroundColor: "RGBA(0,0,0,0.1)", color: "black" }}
+																style={{
+																	backgroundColor: "RGBA(0,0,0,0.1)",
+																	color: "black"
+																}}
 															>
 																<tr>
 																	<th>Unpaid Referrals</th>
@@ -283,19 +288,25 @@ class Statistics extends React.Component {
 																		<td>{row.unpaidReferrals}</td>
 																	)}
 																	{old.unpaidReferrals !== row.unpaidReferrals && (
-																		<td style={{ color: "red" }}>{row.unpaidReferrals}</td>
+																		<td style={{ color: "red" }}>
+																			{row.unpaidReferrals}
+																		</td>
 																	)}
 																	{old.paidReferrals === row.paidReferrals && (
 																		<td>{row.paidReferrals}</td>
 																	)}
 																	{old.paidReferrals !== row.paidReferrals && (
-																		<td style={{ color: "red" }}>{row.paidReferrals}</td>
+																		<td style={{ color: "red" }}>
+																			{row.paidReferrals}
+																		</td>
 																	)}
 																	{old.visits === row.visits && <td>{row.visits}</td>}
 																	{old.visits !== row.visits && (
 																		<td style={{ color: "red" }}>{row.visits}</td>
 																	)}
-																	{old.convRate === row.convRate && <td>{row.convRate}</td>}
+																	{old.convRate === row.convRate && (
+																		<td>{row.convRate}</td>
+																	)}
 																	{old.convRate !== row.convRate && (
 																		<td style={{ color: "red" }}>{row.convRate}</td>
 																	)}
@@ -303,26 +314,35 @@ class Statistics extends React.Component {
 																		<td>${row.unpaidEarnings}</td>
 																	)}
 																	{old.unpaidEarnings !== row.unpaidEarnings && (
-																		<td style={{ color: "red" }}>${row.unpaidEarnings}</td>
+																		<td style={{ color: "red" }}>
+																			${row.unpaidEarnings}
+																		</td>
 																	)}
 																	{old.paidEarnings === row.paidEarnings && (
 																		<td>${row.paidEarnings}</td>
 																	)}
 																	{old.paidEarnings !== row.paidEarnings && (
-																		<td style={{ color: "red" }}>${row.paidEarnings}</td>
+																		<td style={{ color: "red" }}>
+																			${row.paidEarnings}
+																		</td>
 																	)}
 																	{old.commissionRate === row.commissionRate && (
 																		<td>{row.commissionRate}</td>
 																	)}
 																	{old.commissionRate !== row.commissionRate && (
-																		<td style={{ color: "red" }}>{row.commissionRate}</td>
+																		<td style={{ color: "red" }}>
+																			{row.commissionRate}
+																		</td>
 																	)}
 																</tr>
 															</tbody>
 														</Table>
 														<Table className='text-center'>
 															<thead
-																style={{ backgroundColor: "RGBA(0,0,0,0.1)", color: "black" }}
+																style={{
+																	backgroundColor: "RGBA(0,0,0,0.1)",
+																	color: "black"
+																}}
 															>
 																<tr>
 																	<th>Campaign</th>
@@ -338,7 +358,9 @@ class Statistics extends React.Component {
 																		return (
 																			<tr key={el.campaign}>
 																				{old.statisticsTable[key].campaign ===
-																					el.campaign && <td>{el.campaign}</td>}
+																					el.campaign && (
+																					<td>{el.campaign}</td>
+																				)}
 																				{old.statisticsTable[key].campaign !==
 																					el.campaign && (
 																					<td style={{ color: "red" }}>
@@ -353,16 +375,20 @@ class Statistics extends React.Component {
 																						{el.visits}
 																					</td>
 																				)}
-																				{old.statisticsTable[key].uniqueLinks ===
-																					el.uniqueLinks && <td>{el.uniqueLinks}</td>}
-																				{old.statisticsTable[key].uniqueLinks !==
-																					el.uniqueLinks && (
+																				{old.statisticsTable[key]
+																					.uniqueLinks === el.uniqueLinks && (
+																					<td>{el.uniqueLinks}</td>
+																				)}
+																				{old.statisticsTable[key]
+																					.uniqueLinks !== el.uniqueLinks && (
 																					<td style={{ color: "red" }}>
 																						{el.uniqueLinks}
 																					</td>
 																				)}
 																				{old.statisticsTable[key].converted ===
-																					el.converted && <td>{el.converted}</td>}
+																					el.converted && (
+																					<td>{el.converted}</td>
+																				)}
 																				{old.statisticsTable[key].converted !==
 																					el.converted && (
 																					<td style={{ color: "red" }}>
@@ -370,7 +396,9 @@ class Statistics extends React.Component {
 																					</td>
 																				)}
 																				{old.statisticsTable[key].convRate ===
-																					el.convRate && <td>{el.convRate}</td>}
+																					el.convRate && (
+																					<td>{el.convRate}</td>
+																				)}
 																				{old.statisticsTable[key].convRate !==
 																					el.convRate && (
 																					<td style={{ color: "red" }}>
@@ -419,21 +447,27 @@ class Statistics extends React.Component {
 									</TableRow>
 								</TableFooter>
 							</Table>
-						}
-						{!this.state.isAvailable &&
-							<div className="col-md-4 offset-md-4" style={{textAlign: "center", fontSize: 20, padding: 40}}>
+						)}
+						{!this.state.isAvailable && (
+							<div
+								className='col-md-4 offset-md-4'
+								style={{ textAlign: "center", fontSize: 20, padding: 40 }}
+							>
 								No Results
 							</div>
-						}
+						)}
 					</div>
-				}
-				{this.state.tableData.length === 0 && !this.state.isLoading && 
-					<div className="row">
-						<div className="col-md-4 offset-md-4" style={{textAlign: "center", fontSize: 20, padding: 40}}>
+				)}
+				{this.state.tableData.length === 0 && !this.state.isLoading && (
+					<div className='row'>
+						<div
+							className='col-md-4 offset-md-4'
+							style={{ textAlign: "center", fontSize: 20, padding: 40 }}
+						>
 							No Data
 						</div>
 					</div>
-				}
+				)}
 			</Paper>
 		);
 	}

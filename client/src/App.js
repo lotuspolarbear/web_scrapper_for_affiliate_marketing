@@ -7,8 +7,9 @@ import MerchantRegister from "./components/merchant/Register";
 import MerchantManagement from "./components/merchant/Management";
 import SubaccountRegister from "./components/subaccount/Register";
 import SubaccountManagement from "./components/subaccount/Management";
-import Login from "./components/subaccount/Login";
-import Logout from "./components/subaccount/Logout";
+import Login from "./components/user/Login";
+import Register from "./components/user/Register";
+import Logout from "./components/user/Logout";
 
 import AppNavbar from "./components/AppNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -30,7 +31,7 @@ class App extends Component {
 	};
 
 	componentDidMount() {
-		if (localStorage.getItem("subAccount")) {
+		if (localStorage.getItem("user")) {
 			this.setState({ isLoggedin: true });
 		}
 	}
@@ -47,7 +48,9 @@ class App extends Component {
 							<Route exact path='/' component={Dashboard} />
 							<Route exact path='/Dashboard' component={Dashboard} />
 							<Route exact path='/merchant/management' component={MerchantManagement} />
+							<Route exact path='/merchant/register' component={MerchantRegister} />
 							<Route exact path='/subaccount/management' component={SubaccountManagement} />
+							<Route exact path='/subaccount/register' component={SubaccountRegister} />
 							<Route exact path='/logout' render={() => <Logout onChange={this.onChange} />} />
 						</React.Fragment>
 					)}
@@ -56,9 +59,7 @@ class App extends Component {
 						<React.Fragment>
 							<Route exact path='/' render={() => <Login onChange={this.onChange} />} />
 							<Route exact path='/login' render={() => <Login onChange={this.onChange} />} />
-							{/* <Route exact path='/' component={Login} /> */}
-							<Route exact path='/merchant/register' component={MerchantRegister} />
-							<Route exact path='/subaccount/register' component={SubaccountRegister} />
+							<Route exact path='/register' component={Register} />
 						</React.Fragment>
 					)}
 				</div>

@@ -18,7 +18,7 @@ module.exports.doScrape = function(account) {
 		let tds = [];
 
 		$("td").each(function(i, e) {
-			tds[i] = $(this).text();
+			tds[i] = $(this).text().trim();
 		});
 		var unpaidReferrals = tds[0];
 		var paidReferrals = tds[1];
@@ -87,19 +87,32 @@ module.exports.doScrape = function(account) {
 					var current = rows[i];
 					var refferId = $(current)
 						.children("td.referral-reference")
-						.text();
-					var amount = parseFloat($(current)
-						.children("td.referral-amount")
-						.text().replace("$", "").replace(/,/g, ""));
+						.text()
+						.trim();
+					var amount = parseFloat(
+						$(current)
+							.children("td.referral-amount")
+							.text()
+							.trim()
+							.replace("$", "")
+							.replace(/,/g, "")
+					);
 					var description = $(current)
 						.children("td.referral-description")
-						.text();
+						.text()
+						.trim();
 					var status = $(current)
 						.children("td.referral-status")
-						.text();
-					var refDate = date.format(new Date($(current)
-						.children("td.referral-date")
-						.text()), "MM-DD-YY HH:mm");
+						.text()
+						.trim();
+					var refDate = date.format(
+						new Date(
+							$(current)
+								.children("td.referral-date")
+								.text()
+						),
+						"MM-DD-YY HH:mm"
+					);
 					var variationId =
 						description.lastIndexOf("Variation ID") === -1
 							? ""
@@ -182,12 +195,18 @@ module.exports.doScrape = function(account) {
 						.trim();
 					var referUrl = $(current)
 						.children("td[data-th='Referring URL']")
-						.text();
-					var convStatus = $($(current).children("td[data-th='Converted']")).children(".yes").length;
-					var visitDate = date.format(new Date($(current)
-						.children("td[data-th='Date']")
 						.text()
-						.trim()), "MM-DD-YY HH:mm");
+						.trim();
+					var convStatus = $($(current).children("td[data-th='Converted']")).children(".yes").length;
+					var visitDate = date.format(
+						new Date(
+							$(current)
+								.children("td[data-th='Date']")
+								.text()
+								.trim()
+						),
+						"MM-DD-YY HH:mm"
+					);
 					if (
 						lastVisit.length > 0 &&
 						lastVisit[0].url == url &&
@@ -250,12 +269,21 @@ module.exports.doScrape = function(account) {
 			} else {
 				for (var i = 0; i < rows.length; i++) {
 					var current = rows[i];
-					var payoutDate = date.format(new Date($($(current).children("td[data-th='Date']"))
-						.text()
-						.trim()), "MM-DD-YY HH:mm");
-					var amount = parseFloat($($(current).children("td[data-th='Amount']"))
-						.text()
-						.trim().replace("$", "").replace(/,/g, ""));
+					var payoutDate = date.format(
+						new Date(
+							$($(current).children("td[data-th='Date']"))
+								.text()
+								.trim()
+						),
+						"MM-DD-YY HH:mm"
+					);
+					var amount = parseFloat(
+						$($(current).children("td[data-th='Amount']"))
+							.text()
+							.trim()
+							.replace("$", "")
+							.replace(/,/g, "")
+					);
 					var payoutMethod = $($(current).children("td[data-th='Payout Method']"))
 						.text()
 						.trim();

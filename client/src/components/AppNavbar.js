@@ -34,7 +34,7 @@ class AppNavbar extends Component {
 						<NavbarToggler onClick={this.toggle} />
 						<Collapse isOpen={this.state.isOpen} navbar>
 							<Nav className='ml-auto' navbar>
-								{localStorage.getItem("subAccount") && (
+								{localStorage.getItem("user") && (
 									<React.Fragment>
 										<NavItem>
 											<NavLink href='/dashboard/'>Dashboard</NavLink>
@@ -52,13 +52,6 @@ class AppNavbar extends Component {
 												</DropdownItem>
 											</DropdownMenu>
 										</UncontrolledDropdown>
-										<NavItem>
-											<NavLink href='/logout/'>Logout</NavLink>
-										</NavItem>
-									</React.Fragment>
-								)}
-								{!localStorage.getItem("subAccount") && (
-									<React.Fragment>
 										<UncontrolledDropdown nav inNavbar>
 											<DropdownToggle nav caret>
 												Register
@@ -73,7 +66,17 @@ class AppNavbar extends Component {
 											</DropdownMenu>
 										</UncontrolledDropdown>
 										<NavItem>
+											<NavLink href='/logout/'>Logout</NavLink>
+										</NavItem>
+									</React.Fragment>
+								)}
+								{!localStorage.getItem("user") && (
+									<React.Fragment>
+										<NavItem>
 											<NavLink href='/login/'>Login</NavLink>
+										</NavItem>
+										<NavItem>
+											<NavLink href='/register/'>Register</NavLink>
 										</NavItem>
 									</React.Fragment>
 								)}

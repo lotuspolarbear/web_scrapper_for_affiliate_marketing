@@ -15,7 +15,7 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import TableHead from "@material-ui/core/TableHead";
 import axios from "axios";
-const uuidv1 = require('uuid/v1');
+const uuidv1 = require("uuid/v1");
 
 const actionsStyles = theme => ({
 	root: {
@@ -146,19 +146,19 @@ class Visits extends React.Component {
 		isLoading: false
 	};
 
-	constructor(props){
+	constructor(props) {
 		super(props);
 		this.mounted = true;
 	}
 
-	componentWillUnmount(){
+	componentWillUnmount() {
 		this.mounted = false;
-	  }
+	}
 
 	async componentDidMount() {
-		if(this.mounted){
+		if (this.mounted) {
 			if (this.props.id) {
-				await this.setState({isLoading: true});
+				await this.setState({ isLoading: true });
 				await axios.post("/api/visits/getVisits", { subAcctId: this.props.id }).then(res => {
 					this.setState({
 						tableData: res.data.visits,
@@ -180,7 +180,7 @@ class Visits extends React.Component {
 					isLoading: false
 				});
 			});
-		}else if(nextProps.id === ""){
+		} else if (nextProps.id === "") {
 			await this.setState({ selectedId: "", tableData: [], page: 0, isLoading: false });
 		}
 	}
@@ -200,80 +200,89 @@ class Visits extends React.Component {
 
 		return (
 			<Paper className={classes.root}>
-				{this.state.isLoading &&
-					<div className="col-md-4 offset-md-4" style={{textAlign: "center", fontSize: 20, padding: 40}}>
-						<div className="spinner-border" style={{width: "3rem", height: "3rem"}} role="status">
-							<span className="sr-only">Loading...</span>
+				{this.state.isLoading && (
+					<div className='col-md-4 offset-md-4' style={{ textAlign: "center", fontSize: 20, padding: 40 }}>
+						<div className='spinner-border' style={{ width: "3rem", height: "3rem" }} role='status'>
+							<span className='sr-only'>Loading...</span>
 						</div>
 					</div>
-				}
-				{this.state.tableData.length !== 0 && !this.state.isLoading && <div className={classes.tableWrapper}>
-					<Table className={classes.table}>
-						<TableHead>
-							<TableRow>
-								<CustomTableCell padding='checkbox' align='center'>
-									URL
-								</CustomTableCell>	
-								<CustomTableCell padding='checkbox' align='center'>
-									Referring URL
-								</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>
-									Converted
-								</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>
-									Date
-								</CustomTableCell>
-								<CustomTableCell padding='checkbox' align='center'>
-									Scrapped Date
-								</CustomTableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-								<TableRow className={classes.row} key={uuidv1()}>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										<a href={row.href} target="_blank">{row.url}</a>
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.referUrl}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.convStatus ? "o" : "x"}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.visitDate}
-									</TableCell>
-									<TableCell padding='checkbox' className={classes.customFont} align='center'>
-										{row.scrappedDate}
-									</TableCell>
+				)}
+				{this.state.tableData.length !== 0 && !this.state.isLoading && (
+					<div className={classes.tableWrapper}>
+						<Table className={classes.table}>
+							<TableHead>
+								<TableRow>
+									<CustomTableCell padding='checkbox' align='center'>
+										URL
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center'>
+										Referring URL
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center'>
+										Converted
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center'>
+										Date
+									</CustomTableCell>
+									<CustomTableCell padding='checkbox' align='center'>
+										Scrapped Date
+									</CustomTableCell>
 								</TableRow>
-							))}
-						</TableBody>
-						<TableFooter>
-							<TableRow>
-								<TablePagination
-									rowsPerPageOptions={[20, 30, 50, 100]}
-									colSpan={6}
-									count={tableData.length}
-									rowsPerPage={rowsPerPage}
-									page={page}
-									// SelectProps={{
-									// 	native: true
-									// }}
-									onChangePage={this.handleChangePage}
-									onChangeRowsPerPage={this.handleChangeRowsPerPage}
-									ActionsComponent={TablePaginationActionsWrapped}
-								/>
-							</TableRow>
-						</TableFooter>
-					</Table>
-				</div>}
-				
-				{this.state.tableData.length === 0 && !this.state.isLoading && <div className="row">
-					<div className="col-md-4 offset-md-4" style={{textAlign: "center", fontSize: 20, padding: 40}}>
-						No Data
+							</TableHead>
+							<TableBody>
+								{tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
+									<TableRow className={classes.row} key={uuidv1()}>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											<a href={row.href} target='_blank'>
+												{row.url}
+											</a>
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											{row.referUrl.replace(/\s/g, "")}
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											{row.convStatus ? "o" : "x"}
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											{row.visitDate}
+										</TableCell>
+										<TableCell padding='checkbox' className={classes.customFont} align='center'>
+											{row.scrappedDate}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+							<TableFooter>
+								<TableRow>
+									<TablePagination
+										rowsPerPageOptions={[20, 30, 50, 100]}
+										colSpan={6}
+										count={tableData.length}
+										rowsPerPage={rowsPerPage}
+										page={page}
+										// SelectProps={{
+										// 	native: true
+										// }}
+										onChangePage={this.handleChangePage}
+										onChangeRowsPerPage={this.handleChangeRowsPerPage}
+										ActionsComponent={TablePaginationActionsWrapped}
+									/>
+								</TableRow>
+							</TableFooter>
+						</Table>
 					</div>
-				</div>}
+				)}
+
+				{this.state.tableData.length === 0 && !this.state.isLoading && (
+					<div className='row'>
+						<div
+							className='col-md-4 offset-md-4'
+							style={{ textAlign: "center", fontSize: 20, padding: 40 }}
+						>
+							No Data
+						</div>
+					</div>
+				)}
 			</Paper>
 		);
 	}

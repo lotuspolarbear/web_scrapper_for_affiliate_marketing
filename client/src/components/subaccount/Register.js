@@ -23,7 +23,7 @@ class Register extends Component {
 			loginUrl: "",
 			username: "",
 			password: "",
-			confirm_password: "",
+			// confirm_password: "",
 			cronSched: "",
 			isRegistered: false
 		};
@@ -52,30 +52,31 @@ class Register extends Component {
 	}
 	onSubmit(e) {
 		e.preventDefault();
-		if (this.state.password !== this.state.confirm_password) {
-			NotificationManager.error("Password should be confirmed", "Error!", 5000);
-		} else {
-			axios
-				.post("/api/subaccounts/register", {
-					merchantId: this.state.merchantId,
-					subAcctId: this.state.subAcctId,
-					websiteUrl: this.state.websiteUrl,
-					name: this.state.name,
-					affUrl: this.state.affUrl,
-					loginUrl: this.state.loginUrl,
-					username: this.state.username,
-					password: this.state.password,
-					cronSched: this.state.cronSched
-				})
-				.then(res => {
-					if (res.data.success) {
-						NotificationManager.success(res.data.msg, "Notification!", 5000);
-						this.setState({ isRegistered: true });
-					} else {
-						NotificationManager.error(res.data.msg, "Error!", 5000);
-					}
-				});
-		}
+		// if (this.state.password !== this.state.confirm_password) {
+		// 	NotificationManager.error("Password should be confirmed", "Error!", 5000);
+		// } else {
+		axios
+			.post("/api/subaccounts/register", {
+				merchantId: this.state.merchantId,
+				subAcctId: this.state.subAcctId,
+				websiteUrl: this.state.websiteUrl,
+				name: this.state.name,
+				affUrl: this.state.affUrl,
+				loginUrl: this.state.loginUrl,
+				username: this.state.username,
+				password: this.state.password,
+				cronSched: this.state.cronSched
+			})
+			.then(res => {
+				if (res.data.success) {
+					NotificationManager.success(res.data.msg, "Notification!", 5000);
+					this.setState({ isRegistered: true });
+					this.props.history.push("/Dashboard");
+				} else {
+					NotificationManager.error(res.data.msg, "Error!", 5000);
+				}
+			});
+		// }
 	}
 	handleScriptCreate() {
 		// this.setState({ scriptLoaded: false })
@@ -255,7 +256,7 @@ class Register extends Component {
 													/>
 												</div>
 											</div>
-											<div className='form-group row'>
+											{/* <div className='form-group row'>
 												<label htmlFor='password' className='col-sm-4 col-form-label'>
 													Confirm Password:
 												</label>
@@ -270,7 +271,7 @@ class Register extends Component {
 														errorMessages={["This field is required"]}
 													/>
 												</div>
-											</div>
+											</div> */}
 											<div className='form-group row'>
 												<label htmlFor='cronSched' className='col-sm-4 col-form-label'>
 													Cron Schedule:

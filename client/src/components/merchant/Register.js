@@ -28,6 +28,7 @@ class Register extends Component {
 			.then(res => {
 				if (res.data.success) {
 					NotificationManager.success(res.data.msg, "Notification!", 5000);
+					this.props.history.push("/Dashboard");
 				} else {
 					NotificationManager.error(res.data.msg, "Error!", 5000);
 				}

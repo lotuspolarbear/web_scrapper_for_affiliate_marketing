@@ -9,7 +9,9 @@ const subaccounts = require("./routes/api/subaccounts");
 const statistics = require("./routes/api/statistics");
 const referrals = require("./routes/api/referrals");
 const visits = require("./routes/api/visits");
+const users = require("./routes/api/users");
 const payouts = require("./routes/api/payouts");
+const date = require("date-and-time");
 const app = express();
 
 // Bodyparser Middleware
@@ -31,9 +33,10 @@ app.use("/api/subaccounts", subaccounts);
 app.use("/api/statistics", statistics);
 app.use("/api/referrals", referrals);
 app.use("/api/visits", visits);
+app.use("/api/users", users);
 app.use("/api/payouts", payouts);
 
-//crons.prepareCron();
+// crons.prepareCron();
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {

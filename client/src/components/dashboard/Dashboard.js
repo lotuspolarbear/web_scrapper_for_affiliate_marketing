@@ -13,6 +13,7 @@ import { Input } from "reactstrap";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
+const uuidv1 = require("uuid/v1");
 
 function TabContainer(props) {
 	return <div style={{ padding: 20 }}>{props.children}</div>;
@@ -69,30 +70,31 @@ class Dashboard extends Component {
 					this.setState({ subAccounts: "no result" });
 				} else {
 					var flag = true;
-					this.setState({
-						subAccounts: res.data.map(account => {
-							// if (flag && account.merchantId === this.state.selectedMerchantId) {
-							// 	flag = false;
-							// 	this.setState({ flag: false, selectedAccountId: account._id });
-							// }
+					var arr = [];
+					res.data.map(account => {
+						// if (flag && account.merchantId === this.state.selectedMerchantId) {
+						// 	flag = false;
+						// 	this.setState({ flag: false, selectedAccountId: account._id });
+						// }
+						if (flag) {
+							flag = false;
+							this.setState({ flag: false, selectedAccountId: account._id });
+						}
+						var subAccount = {};
 
-							if (flag) {
-								flag = false;
-								this.setState({ flag: false, selectedAccountId: account._id });
+						for (var i = 0; i < this.state.merchants.length; i++) {
+							if (account.merchantId == this.state.merchants[i].value) {
+								subAccount.value = account._id;
+								subAccount.name = account.name;
+								subAccount.merchant_id = account.merchantId;
+								subAccount.merchant_name = this.state.merchants[i].name;
+								arr.push(subAccount);
+								break;
 							}
-							var subAccount = {};
-							subAccount.value = account._id;
-							subAccount.name = account.name;
-							subAccount.merchant_id = account.merchantId;
-
-							this.state.merchants.map(merchant => {
-								if (account.merchant_id === merchant._id) {
-									subAccount.merchant_name = merchant.name;
-								}
-							});
-
-							return subAccount;
-						})
+						}
+					});
+					this.setState({
+						subAccounts: arr
 					});
 				}
 			});
@@ -110,22 +112,22 @@ class Dashboard extends Component {
 		this.setState({ selectedAccountId: event.target.value });
 	};
 
-	merchantChanged = async (event, value) => {
-		var old_selected_account_id = this.state.selectedAccountId;
-		this.setState({ selectedMerchantId: event.target.value });
-		var selectedMerchantId = event.target.value;
-		var flag = true;
-		await this.state.subAccounts.map(account => {
-			if (flag && account.merchant_id === selectedMerchantId) {
-				this.setState({ selectedAccountId: account.value });
-				flag = false;
-			}
-		});
+	// merchantChanged = async (event, value) => {
+	// 	var old_selected_account_id = this.state.selectedAccountId;
+	// 	this.setState({ selectedMerchantId: event.target.value });
+	// 	var selectedMerchantId = event.target.value;
+	// 	var flag = true;
+	// 	await this.state.subAccounts.map(account => {
+	// 		if (flag && account.merchantId === selectedMerchantId) {
+	// 			this.setState({ selectedAccountId: account.value });
+	// 			flag = false;
+	// 		}
+	// 	});
 
-		if (this.state.selectedAccountId !== "" && old_selected_account_id === this.state.selectedAccountId) {
-			await this.setState({ selectedAccountId: "" });
-		}
-	};
+	// 	if (this.state.selectedAccountId !== "" && old_selected_account_id === this.state.selectedAccountId) {
+	// 		await this.setState({ selectedAccountId: "" });
+	// 	}
+	// };
 
 	render() {
 		const { classes } = this.props;

@@ -10,18 +10,18 @@ getAllSubAccounts = function() {
 		if (err) {
 			console.log("Can't get sub accounts to scrap.");
 		} else {
-			Scrapper.doScrape(accounts[1]);
-			// for (var i = 0; i < accounts.length; i++) {
-			// 	Scrapper.doScrape(accounts[i]);
-			// }
+			// Scrapper.doScrape(accounts[1]);
+			for (var i = 0; i < accounts.length; i++) {
+				Scrapper.doScrape(accounts[i]);
+			}
 		}
 	});
 };
 
 module.exports.prepareCron = function() {
-	//Statistic.deleteStatistics();
-	//Referral.deleteReferrals();
-	//Visit.deleteVisits();
-	//Payout.deletePayouts();
+	// Statistic.deleteStatistics();
+	// Referral.deleteReferrals();
+	// Visit.deleteVisits();
+	// Payout.deletePayouts();
 	getAllSubAccounts();
 };

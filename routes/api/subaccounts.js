@@ -33,13 +33,13 @@ router.post("/login", (req, res, next) => {
 	});
 	Subaccount.checkSubaccountName(requestedSubaccount, (err, result) => {
 		if (result == null) {
-			return res.json({ success: false, msg: "User doesn't exist. Please make sure of your login credentials." });
+			return res.json({ success: false, msg: "No user exists." });
 		} else {
 			Subaccount.checkSubaccount(requestedSubaccount, (err, result) => {
 				if (result == null) {
 					return res.json({ success: false, msg: "Password is incorrect." });
 				} else {
-					return res.json({ success: true, msg: "Logged in successfully." });
+					return res.json({ success: true, msg: "You are logged in successfully." });
 				}
 			});
 		}
