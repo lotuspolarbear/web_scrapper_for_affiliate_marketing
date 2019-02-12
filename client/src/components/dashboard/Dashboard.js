@@ -13,7 +13,6 @@ import { Input } from "reactstrap";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-const uuidv1 = require("uuid/v1");
 
 function TabContainer(props) {
 	return <div style={{ padding: 20 }}>{props.children}</div>;
@@ -72,10 +71,6 @@ class Dashboard extends Component {
 					var flag = true;
 					var arr = [];
 					res.data.map(account => {
-						// if (flag && account.merchantId === this.state.selectedMerchantId) {
-						// 	flag = false;
-						// 	this.setState({ flag: false, selectedAccountId: account._id });
-						// }
 						if (flag) {
 							flag = false;
 							this.setState({ flag: false, selectedAccountId: account._id });
@@ -83,7 +78,7 @@ class Dashboard extends Component {
 						var subAccount = {};
 
 						for (var i = 0; i < this.state.merchants.length; i++) {
-							if (account.merchantId == this.state.merchants[i].value) {
+							if (account.merchantId === this.state.merchants[i].value) {
 								subAccount.value = account._id;
 								subAccount.name = account.name;
 								subAccount.merchant_id = account.merchantId;

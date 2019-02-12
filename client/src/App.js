@@ -1,15 +1,14 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { NotificationContainer, NotificationManager } from "react-notifications";
+import { NotificationContainer } from "react-notifications";
 
 import Dashboard from "./components/dashboard/Dashboard";
 import MerchantRegister from "./components/merchant/Register";
 import MerchantManagement from "./components/merchant/Management";
 import SubaccountRegister from "./components/subaccount/Register";
 import SubaccountManagement from "./components/subaccount/Management";
-import Login from "./components/user/Login";
-import Register from "./components/user/Register";
-import Logout from "./components/user/Logout";
+import Login from "./components/subaccount/Login";
+import Logout from "./components/subaccount/Logout";
 
 import AppNavbar from "./components/AppNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -58,8 +57,6 @@ class App extends Component {
 					{!this.state.isLoggedin && (
 						<React.Fragment>
 							<Route exact path='/' render={() => <Login onChange={this.onChange} />} />
-							<Route exact path='/login' render={() => <Login onChange={this.onChange} />} />
-							<Route exact path='/register' component={Register} />
 						</React.Fragment>
 					)}
 				</div>

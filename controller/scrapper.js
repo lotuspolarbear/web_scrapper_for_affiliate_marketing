@@ -18,7 +18,7 @@ module.exports.doScrape = function(account) {
 		let tds = [];
 
 		$("td").each(function(i, e) {
-			tds[i] = $(this).text().trim();
+			tds[i] = $(this).text();
 		});
 		var unpaidReferrals = tds[0];
 		var paidReferrals = tds[1];
@@ -93,7 +93,6 @@ module.exports.doScrape = function(account) {
 						$(current)
 							.children("td.referral-amount")
 							.text()
-							.trim()
 							.replace("$", "")
 							.replace(/,/g, "")
 					);

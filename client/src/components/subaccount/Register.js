@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Route, Redirect } from "react-router";
+import { Redirect } from "react-router";
 import { Input } from "reactstrap";
 import axios from "axios";
-import { NotificationContainer, NotificationManager } from "react-notifications";
+import { NotificationManager } from "react-notifications";
 import { ValidatorForm } from "react-form-validator-core";
 import TextValidator from "../TextValidator";
 import Script from "react-load-script";
@@ -23,7 +23,7 @@ class Register extends Component {
 			loginUrl: "",
 			username: "",
 			password: "",
-			// confirm_password: "",
+			cpassword: "",
 			cronSched: "",
 			isRegistered: false
 		};
@@ -52,9 +52,9 @@ class Register extends Component {
 	}
 	onSubmit(e) {
 		e.preventDefault();
-		// if (this.state.password !== this.state.confirm_password) {
-		// 	NotificationManager.error("Password should be confirmed", "Error!", 5000);
-		// } else {
+		if (this.state.password !== this.state.cpassword) {
+			NotificationManager.error("Password should be confirmed", "Error!", 5000);
+		} else {
 		axios
 			.post("/api/subaccounts/register", {
 				merchantId: this.state.merchantId,
@@ -76,7 +76,7 @@ class Register extends Component {
 					NotificationManager.error(res.data.msg, "Error!", 5000);
 				}
 			});
-		// }
+		}
 	}
 	handleScriptCreate() {
 		// this.setState({ scriptLoaded: false })
@@ -256,22 +256,22 @@ class Register extends Component {
 													/>
 												</div>
 											</div>
-											{/* <div className='form-group row'>
-												<label htmlFor='password' className='col-sm-4 col-form-label'>
+											<div className='form-group row'>
+												<label htmlFor='cpassword' className='col-sm-4 col-form-label'>
 													Confirm Password:
 												</label>
 												<div className='col-sm-8'>
 													<TextValidator
 														onChange={this.onChange}
-														name='confirm_password'
+														name='cpassword'
 														type='password'
 														className='form-control'
-														value={this.state.confirm_password}
+														value={this.state.cpassword}
 														validators={["required"]}
 														errorMessages={["This field is required"]}
 													/>
 												</div>
-											</div> */}
+											</div>
 											<div className='form-group row'>
 												<label htmlFor='cronSched' className='col-sm-4 col-form-label'>
 													Cron Schedule:

@@ -127,6 +127,10 @@ const styles = theme => ({
 	tableWrapper: {
 		overflowX: "auto"
 	},
+	wordBreak: {
+		wordBreak: "break-all",
+		fontSize: 16
+	},
 	customFont: {
 		fontSize: 16
 	},
@@ -215,7 +219,7 @@ class Visits extends React.Component {
 									<CustomTableCell padding='checkbox' align='center'>
 										URL
 									</CustomTableCell>
-									<CustomTableCell padding='checkbox' align='center'>
+									<CustomTableCell padding='checkbox' align='center' width='450px'>
 										Referring URL
 									</CustomTableCell>
 									<CustomTableCell padding='checkbox' align='center'>
@@ -233,12 +237,12 @@ class Visits extends React.Component {
 								{tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
 									<TableRow className={classes.row} key={uuidv1()}>
 										<TableCell padding='checkbox' className={classes.customFont} align='center'>
-											<a href={row.href} target='_blank'>
+											<a href={row.href} target='_blank' rel="noopener noreferrer">
 												{row.url}
 											</a>
 										</TableCell>
-										<TableCell padding='checkbox' className={classes.customFont} align='center'>
-											{row.referUrl.replace(/\s/g, "")}
+										<TableCell padding='checkbox' className={classes.wordBreak} align='center' width='450px'>
+											{row.referUrl}
 										</TableCell>
 										<TableCell padding='checkbox' className={classes.customFont} align='center'>
 											{row.convStatus ? "o" : "x"}

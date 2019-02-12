@@ -193,7 +193,7 @@ class Statistics extends React.Component {
 	handleDateChange = async date => {
 		this.setState({ isAvailable: false });
 		await this.setState({ selectedDate: date });
-		var date = this.state.selectedDate;
+		date = this.state.selectedDate;
 		var month = date.getUTCMonth() + 1; //months from 1-12
 		var day = date.getUTCDate();
 		var year = date.getUTCFullYear();
@@ -223,7 +223,6 @@ class Statistics extends React.Component {
 		const { old } = this.state;
 
 		const { rowsPerPage, page, tableData, selectedDate } = this.state;
-		// const emptyRows = rowsPerPage - Math.min(rowsPerPage, tableData.length - page * rowsPerPage);
 
 		return (
 			<Paper className={classes.root}>
@@ -437,9 +436,6 @@ class Statistics extends React.Component {
 											count={tableData.length}
 											rowsPerPage={rowsPerPage}
 											page={page}
-											// SelectProps={{
-											// 	native: true
-											// }}
 											onChangePage={this.handleChangePage}
 											onChangeRowsPerPage={this.handleChangeRowsPerPage}
 											ActionsComponent={TablePaginationActionsWrapped}

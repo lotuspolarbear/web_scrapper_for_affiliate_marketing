@@ -70,7 +70,7 @@ class AppNavbar extends Component {
 										</NavItem>
 									</React.Fragment>
 								)}
-								{!localStorage.getItem("user") && (
+								{/* {!localStorage.getItem("user") && (
 									<React.Fragment>
 										<NavItem>
 											<NavLink href='/login/'>Login</NavLink>
@@ -79,7 +79,7 @@ class AppNavbar extends Component {
 											<NavLink href='/register/'>Register</NavLink>
 										</NavItem>
 									</React.Fragment>
-								)}
+								)} */}
 							</Nav>
 						</Collapse>
 					</Container>

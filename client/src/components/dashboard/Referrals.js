@@ -127,7 +127,7 @@ const styles = theme => ({
 		overflowX: "auto"
 	},
 	customFont: {
-		fontSize: 14
+		fontSize: 16
 	},
 	customBtn: {
 		"&:focus": {
@@ -195,8 +195,7 @@ class Referrals extends React.Component {
 	render() {
 		const { classes } = this.props;
 		const { rowsPerPage, page, tableData } = this.state;
-		// const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-
+		
 		return (
 			<Paper className={classes.root}>
 				{this.state.isLoading && (
@@ -226,10 +225,10 @@ class Referrals extends React.Component {
 									<CustomTableCell padding='checkbox' align='center'>
 										Status
 									</CustomTableCell>
-									<CustomTableCell padding='checkbox' align='center' width='130px'>
+									<CustomTableCell padding='checkbox' align='center' width='150px'>
 										Date
 									</CustomTableCell>
-									<CustomTableCell padding='checkbox' align='center' width='130px'>
+									<CustomTableCell padding='checkbox' align='center' width='150px'>
 										Scrapped Date
 									</CustomTableCell>
 								</TableRow>

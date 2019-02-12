@@ -1,14 +1,9 @@
 import React, { Component } from "react";
-import { Route, Redirect } from "react-router";
-import { Input } from "reactstrap";
+import { Redirect } from "react-router";
 import axios from "axios";
-import { NotificationContainer, NotificationManager } from "react-notifications";
+import { NotificationManager } from "react-notifications";
 import { ValidatorForm } from "react-form-validator-core";
 import TextValidator from "../TextValidator";
-import Script from "react-load-script";
-import $ from "jquery";
-window.$ = $;
-global.jQuery = $;
 
 class Login extends Component {
 	constructor(props) {
@@ -44,32 +39,20 @@ class Login extends Component {
 	onSubmit(e) {
 		e.preventDefault();
 		axios
-			.post("/api/subaccounts/login", {
+			.post("/api/users/login", {
 				username: this.state.username,
 				password: this.state.password
 			})
 			.then(res => {
 				if (res.data.success) {
-					NotificationManager.success(res.data.msg, "Notification!", 3000);
+					NotificationManager.success(res.data.detail, res.data.title, 3000);
 					this.setState({ isLoggedin: true });
-					localStorage.setItem("subAccount", this.state.username);
+					localStorage.setItem("user", this.state.username);
 					this.props.onChange(true);
-
-					// this.handler();
-
-					// getter
-					// localStorage.getItem('myData');
 				} else {
-					NotificationManager.error(res.data.msg, "Error!", 3000);
+					NotificationManager.error(res.data.errors[0].detail, res.data.errors[0].title, 3000);
 				}
 			});
-	}
-	handleScriptCreate() {
-		// this.setState({ scriptLoaded: false })
-	}
-
-	handleScriptError() {
-		// this.setState({ scriptError: true })
 	}
 	render() {
 		const { isLoggedin } = this.state;

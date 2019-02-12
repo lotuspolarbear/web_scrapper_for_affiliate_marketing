@@ -127,7 +127,7 @@ const styles = theme => ({
 		overflowX: "auto"
 	},
 	customFont: {
-		fontSize: 14
+		fontSize: 16
 	},
 	customBtn: {
 		"&:focus": {
