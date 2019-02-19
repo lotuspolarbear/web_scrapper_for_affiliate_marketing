@@ -39,7 +39,7 @@ class Login extends Component {
 	onSubmit(e) {
 		e.preventDefault();
 		axios
-			.post("/api/users/login", {
+			.post("/api/subaccounts/login", {
 				username: this.state.username,
 				password: this.state.password
 			})

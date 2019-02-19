@@ -3,22 +3,21 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
 
-// const crons = require("./controller/crons");
 const merchants = require("./routes/api/merchants");
 const subaccounts = require("./routes/api/subaccounts");
 const statistics = require("./routes/api/statistics");
 const referrals = require("./routes/api/referrals");
 const visits = require("./routes/api/visits");
-const users = require("./routes/api/users");
 const payouts = require("./routes/api/payouts");
 const app = express();
 const crons = require("./controller/crons");
+
 // Bodyparser Middleware
 app.use(bodyParser.json());
 
 // DB Config
-const db = require("./config/db").mongoURI;
-//const db = require("./config/key").mongoURI;
+//const db = require("./config/config").localMongoURI;
+const db = require("./config/config").mongoURI;
 
 // Connect to Mongo
 mongoose
@@ -32,7 +31,6 @@ app.use("/api/subaccounts", subaccounts);
 app.use("/api/statistics", statistics);
 app.use("/api/referrals", referrals);
 app.use("/api/visits", visits);
-app.use("/api/users", users);
 app.use("/api/payouts", payouts);
 
 //crons.prepareCron();

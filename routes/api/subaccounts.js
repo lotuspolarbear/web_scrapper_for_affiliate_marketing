@@ -1,4 +1,5 @@
 const express = require("express");
+const Crypto = require("../../controller/crypto");
 const router = express.Router();
 
 // Sub Account Model
@@ -6,6 +7,7 @@ const Subaccount = require("../../models/Subaccount");
 
 //Register New Sub Account
 router.post("/register", (req, res, next) => {
+	var password = Crypto.encrypt(req.body.password);
 	let newSubaccount = new Subaccount({
 		merchantId: req.body.merchantId,
 		subAcctId: req.body.subAcctId,
@@ -14,7 +16,7 @@ router.post("/register", (req, res, next) => {
 		affUrl: req.body.affUrl,
 		loginUrl: req.body.loginUrl,
 		username: req.body.username,
-		password: req.body.password,
+		password: password,
 		cronSched: req.body.cronSched
 	});
 	Subaccount.addSubaccount(newSubaccount, (err, subaccount) => {
@@ -26,24 +28,47 @@ router.post("/register", (req, res, next) => {
 	});
 });
 
-router.post("/login", (req, res, next) => {
-	let requestedSubaccount = new Subaccount({
-		username: req.body.username,
-		password: req.body.password
-	});
-	Subaccount.checkSubaccountName(requestedSubaccount, (err, result) => {
-		if (result == null) {
-			return res.json({ success: false, msg: "No user exists." });
-		} else {
-			Subaccount.checkSubaccount(requestedSubaccount, (err, result) => {
-				if (result == null) {
-					return res.json({ success: false, msg: "Password is incorrect." });
-				} else {
-					return res.json({ success: true, msg: "You are logged in successfully." });
-				}
+router.post("/login", async (req, res) => {
+	try {
+		const { username, password } = req.body;
+		if (typeof password !== "string") {
+			return res.json({
+				success: false,
+				errors: [
+					{
+						title: "Bad Request",
+						detail: "Password must be a string"
+					}
+				]
 			});
 		}
-	});
+		//queries database to find a user with the received username
+		const user = await Subaccount.findOne({ username });
+		if (!user) {
+			throw new Error("No user exists.");
+		}
+		var decryptedPass = Crypto.decrypt(user.password);
+		
+		if (password!=decryptedPass) {
+			throw new Error("Password is incorrect.");
+		}
+		res.json({
+			success: true,
+			title: "Login Successful",
+			detail: "Successfully validated user credentials"
+		});
+	} catch (err) {
+		res.json({
+			success: false,
+			errors: [
+				{
+					title: "Invalid Credentials",
+					detail: err.message,
+					errorMessage: err.message
+				}
+			]
+		});
+	}
 });
 
 router.post("/reSchedule", (req, res, next) => {
@@ -72,4 +97,5 @@ router.get("/getAllSubAccounts", (req, res) => {
 		.sort({ subAcctId: -1 })
 		.then(accounts => res.json(accounts));
 });
+
 module.exports = router;

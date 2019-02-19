@@ -5,10 +5,8 @@ import axios from "axios";
 import { NotificationManager } from "react-notifications";
 import { ValidatorForm } from "react-form-validator-core";
 import TextValidator from "../TextValidator";
-import Script from "react-load-script";
-import $ from "jquery";
-window.$ = $;
-global.jQuery = $;
+import CronBuilder from  'react-cron-builder';
+import 'react-cron-builder/dist/bundle.css';
 
 class Register extends Component {
 	constructor() {
@@ -24,11 +22,12 @@ class Register extends Component {
 			username: "",
 			password: "",
 			cpassword: "",
-			cronSched: "",
+			cronSched: "* */8 * * *",
 			isRegistered: false
 		};
 
 		this.onChange = this.onChange.bind(this);
+		this.onChangeCronExpression = this.onChangeCronExpression.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 	}
 
@@ -49,6 +48,9 @@ class Register extends Component {
 
 	onChange(e) {
 		this.setState({ [e.target.name]: e.target.value });
+	}
+	onChangeCronExpression(expression){
+		this.setState({ cronSched: expression });
 	}
 	onSubmit(e) {
 		e.preventDefault();
@@ -78,28 +80,7 @@ class Register extends Component {
 			});
 		}
 	}
-	handleScriptCreate() {
-		// this.setState({ scriptLoaded: false })
-	}
 
-	handleScriptError() {
-		// this.setState({ scriptError: true })
-	}
-
-	handleScriptLoad() {
-		// this.setState({ scriptLoaded: true })
-		let th = this;
-		$(function() {
-			// Initialize DOM with cron builder with options
-			$("#cron-expression").cronBuilder({
-				selectorLabel: "Select time period:  ",
-				onChange: function(expression) {
-					th.setState({ cronSched: expression });
-					$("#expression-result").text(expression);
-				}
-			});
-		});
-	}
 	render() {
 		const { isRegistered } = this.state;
 		if (this.state.merchants === "no result") {
@@ -117,12 +98,6 @@ class Register extends Component {
 					{isRegistered && <Redirect to='/login' />}
 					{!isRegistered && (
 						<React.Fragment>
-							<Script
-								url='/assets/jquery-cron-quartz.min.js'
-								onCreate={this.handleScriptCreate.bind(this)}
-								onError={this.handleScriptError.bind(this)}
-								onLoad={this.handleScriptLoad.bind(this)}
-							/>
 
 							<div className='container'>
 								<div className='row'>
@@ -277,15 +252,11 @@ class Register extends Component {
 													Cron Schedule:
 												</label>
 												<div className='col-sm-8'>
-													<div className='demo'>
-														<div id='cron-expression' className='cron-builder' />
-														<div className='alert alert-warning'>
-															<p>
-																<strong>Cron Expression:</strong>{" "}
-																<span id='expression-result' />
-															</p>
-														</div>
-													</div>
+												<CronBuilder 
+													cronExpression="* */8 * * *"
+													onChange={this.onChangeCronExpression}
+													showResult={true}
+												/>
 												</div>
 											</div>
 											<div className='form-group row'>

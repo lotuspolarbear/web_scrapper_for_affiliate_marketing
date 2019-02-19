@@ -10,6 +10,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
+import CronBuilder from  'react-cron-builder';
 
 import { confirmAlert } from "react-confirm-alert";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,14 +18,8 @@ import Paper from "@material-ui/core/Paper";
 import Tooltip from "@material-ui/core/Tooltip";
 import { NotificationManager } from "react-notifications";
 import EditIcon from "@material-ui/icons/Edit";
-import "react-confirm-alert/src/react-confirm-alert.css";
-
-import Script from 'react-load-script';
-import $ from "jquery";
-window.$ = $;
-global.jQuery = $;
-
-
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import 'react-cron-builder/dist/bundle.css';
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -54,6 +49,10 @@ function getSorting(order, orderBy) {
 
 const rows = [
     {
+        id: "DB ID",
+        label: "DB ID"
+    },
+    {
         id: "subAcctId",
         label: "Sub Account ID"
     },
@@ -76,6 +75,10 @@ const rows = [
     {
         id: "username",
         label: "Username"
+    },
+    {
+        id: "password",
+        label: "Password"
     },
     {
         id: "cronSched",
@@ -153,6 +156,7 @@ class Management extends Component {
             page: 0,
             rowsPerPage: 10
         };
+        this.onChangeCronExpression = this.onChangeCronExpression.bind(this);
     }
   
     async componentDidMount() {        
@@ -161,28 +165,10 @@ class Management extends Component {
         })
     }
 
-    handleScriptCreate() {
-    // this.setState({ scriptLoaded: false })
+    onChangeCronExpression(expression){
+		this.setState({ newCronSched: expression });
     }
-
-    handleScriptError() {
-    // this.setState({ scriptError: true })
-    }
-
-    handleScriptLoad() {
-    // this.setState({ scriptLoaded: true })
-    let th = this;
-    $(function() {
-      // Initialize DOM with cron builder with options
-      $("#cron-expression").cronBuilder({
-          selectorLabel: "Select time period:  ",
-          onChange: function(expression) {
-            th.setState({newCronSched: expression});
-              $('#expression-result').text(expression);
-          }
-      });
-    });
-    }
+    
     handleCronSched(accountId) {
         axios
             .post("/api/subaccounts/reSchedule", {
@@ -239,33 +225,26 @@ class Management extends Component {
             customUI: ({ onClose }) => {
               return (
                 <React.Fragment>
-                <Script
-                    url="/assets/jquery-cron-quartz.min.js"
-                    onCreate={this.handleScriptCreate.bind(this)}
-                    onError={this.handleScriptError.bind(this)}
-                    onLoad={this.handleScriptLoad.bind(this)}
-                  />
                 <div className="custom-confirm-alert">
-                  <h2>Do you want to change the cron schedule of this account?</h2>                 
-                  <div className="demo">
-                      <div id="cron-expression" className="cron-builder"></div>
-                      <div className="alert alert-warning">
-                          <p><strong>Cron Expression:</strong> <span id="expression-result"></span></p>
-                      </div>
-                  </div>
-                  <button onClick={onClose}>No</button>
-                  <button
-                    onClick={() => {
-                        if(this.state.newCronSched === ""){
-                            NotificationManager.warning("Please input new cron schedule", "Warning!", 5000);
-                        } else {
-                            this.handleCronSched(accountId);
-                            onClose();
-                        }
-                    }}
-                  >
-                    Yes, Change it!
-                  </button>
+                    <h2>Do you want to change the cron schedule of this account?</h2>                 
+                    <CronBuilder 
+                            cronExpression="* */8 * * *"
+                            onChange={this.onChangeCronExpression}
+                            showResult={true}
+                        />
+                    <button onClick={onClose}>No</button>
+                    <button
+                        onClick={() => {
+                            if(this.state.newCronSched === ""){
+                                NotificationManager.warning("Please input new cron schedule", "Warning!", 5000);
+                            } else {
+                                this.handleCronSched(accountId);
+                                onClose();
+                            }
+                        }}
+                    >
+                        Yes, Change it!
+                    </button>
                 </div>
                 </React.Fragment>
               );
@@ -299,13 +278,15 @@ class Management extends Component {
                                                 hover
                                                 tabIndex={-1}
                                                 key={account._id}
-                                            >
+                                            >   
+                                                <TableCell align={"center"}>{account._id}</TableCell>
                                                 <TableCell align={"center"}>{account.subAcctId}</TableCell>
                                                 <TableCell align={"center"}>{account.websiteUrl}</TableCell>
                                                 <TableCell align={"center"}>{account.name}</TableCell>
                                                 <TableCell align={"center"}>{account.affUrl}</TableCell>
                                                 <TableCell align={"center"}>{account.loginUrl}</TableCell>
                                                 <TableCell align={"center"}>{account.username}</TableCell>
+                                                <TableCell align={"center"}>{account.password}</TableCell>
                                                 <TableCell align={"center"}>{account.cronSched}</TableCell>
                                                 <TableCell align={"center"}
                                                     onClick={event =>

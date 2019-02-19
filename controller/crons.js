@@ -5,23 +5,22 @@ const Referral = require("../models/Referral");
 const Visit = require("../models/Visit");
 const Payout = require("../models/Payout");
 const Scrapper = require("./scrapper");
+const Crypto = require("../controller/crypto");
 
 getAllSubAccounts = function() {
 	Subaccount.getSubAccounts((err, accounts) => {
-		var k = schedule.scheduleJob(accounts[1].cronSched, function(){		
-			console.log("Cron schedule is working for" + accounts[1].username);
-		});
+
 		if (err) {
 			console.log("Can't get sub accounts to scrap.");
 		} else {
-			//Scrapper.doScrape(accounts[0]);
-			for (var i = 0; i < accounts.length; i++) {
-				console.log(accounts[i].cronSched);
-				var h = schedule.scheduleJob(accounts[i].cronSched, function(){		
-					console.log("Cron schedule is working for" + accounts[i].username);
-				});
-				//Scrapper.doScrape(accounts[i]);
-			}
+			Scrapper.doScrape(accounts[4]);
+			// for (var i = 0; i < accounts.length; i++) {
+			// 	console.log(accounts[i].cronSched);
+			// 	var h = schedule.scheduleJob(accounts[i].cronSched, function(){		
+			// 		console.log("Cron schedule is working for" + accounts[i].username);
+			// 	});
+			// 	Scrapper.doScrape(accounts[i]);
+			// }
 		}
 	});
 };

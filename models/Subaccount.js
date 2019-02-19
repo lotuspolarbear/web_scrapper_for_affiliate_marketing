@@ -69,3 +69,12 @@ module.exports.getSubAccounts = function(callback) {
 		.sort({ _id: -1 })
 		.exec(callback);
 };
+module.exports.changePassword = function(user, callback){
+	console.log(user);
+	Subaccount.findOneAndUpdate(
+		{ _id: user.accountId },
+		{ password: user.password },
+		{ new: true },
+		callback
+	);
+}

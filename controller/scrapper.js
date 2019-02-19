@@ -3,6 +3,7 @@ const cheerio = require("cheerio");
 const puppeteer = require("puppeteer");
 const date = require("date-and-time");
 
+const Crypto = require("../controller/crypto");
 const Statistic = require("../models/Statistic");
 const Referral = require("../models/Referral");
 const Visit = require("../models/Visit");
@@ -322,6 +323,7 @@ module.exports.doScrape = function(account) {
 	}
 
 	async function run() {
+		var loginPassword = Crypto.decrypt(account.password);
 		const browser = await puppeteer.launch({ headless: false });
 		const loginPage = await browser.newPage();
 
@@ -334,7 +336,7 @@ module.exports.doScrape = function(account) {
 		await loginPage.keyboard.type(account.username);
 
 		await loginPage.click(PASSWORD_SELECTOR);
-		await loginPage.keyboard.type(account.password);
+		await loginPage.keyboard.type(loginPassword);
 
 		await loginPage.click(BUTTON_SELECTOR);
 
