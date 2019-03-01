@@ -41,7 +41,7 @@ class AppNavbar extends Component {
 										</NavItem>
 										<UncontrolledDropdown nav inNavbar>
 											<DropdownToggle nav caret>
-												Account Management
+												Management
 											</DropdownToggle>
 											<DropdownMenu>
 												<DropdownItem tag='a' href='/merchant/management'>
@@ -49,6 +49,9 @@ class AppNavbar extends Component {
 												</DropdownItem>
 												<DropdownItem tag='a' href='/subaccount/management'>
 													Sub Accounts
+												</DropdownItem>
+												<DropdownItem tag='a' href='/profile/management'>
+													Profiles
 												</DropdownItem>
 											</DropdownMenu>
 										</UncontrolledDropdown>
@@ -62,6 +65,9 @@ class AppNavbar extends Component {
 												</DropdownItem>
 												<DropdownItem tag='a' href='/subaccount/register'>
 													Sub Account
+												</DropdownItem>
+												<DropdownItem tag='a' href='/profile/register'>
+													Profile
 												</DropdownItem>
 											</DropdownMenu>
 										</UncontrolledDropdown>

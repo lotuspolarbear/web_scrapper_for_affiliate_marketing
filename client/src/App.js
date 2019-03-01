@@ -7,6 +7,8 @@ import MerchantRegister from "./components/merchant/Register";
 import MerchantManagement from "./components/merchant/Management";
 import SubaccountRegister from "./components/subaccount/Register";
 import SubaccountManagement from "./components/subaccount/Management";
+import ProfileRegister from "./components/profile/Register";
+import ProfileManagement from "./components/profile/Management";
 import Login from "./components/subaccount/Login";
 import Logout from "./components/subaccount/Logout";
 
@@ -45,11 +47,13 @@ class App extends Component {
 					{this.state.isLoggedin && (
 						<React.Fragment>
 							<Route exact path='/' component={Dashboard} />
-							<Route exact path='/Dashboard' component={Dashboard} />
+							<Route exact path='/dashboard' component={Dashboard} />
 							<Route exact path='/merchant/management' component={MerchantManagement} />
 							<Route exact path='/merchant/register' component={MerchantRegister} />
 							<Route exact path='/subaccount/management' component={SubaccountManagement} />
 							<Route exact path='/subaccount/register' component={SubaccountRegister} />
+							<Route exact path='/profile/management' component={ProfileManagement} />
+							<Route exact path='/profile/register' component={ProfileRegister} />
 							<Route exact path='/logout' render={() => <Logout onChange={this.onChange} />} />
 						</React.Fragment>
 					)}

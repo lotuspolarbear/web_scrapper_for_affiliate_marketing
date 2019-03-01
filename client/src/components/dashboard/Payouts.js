@@ -173,6 +173,7 @@ class Payouts extends React.Component {
 		if (nextProps.id !== "" && this.state.selectedId !== nextProps.id) {
 			await this.setState({ selectedId: nextProps.id, isLoading: true });
 			await axios.post("/api/payouts/getPayouts", { subAcctId: this.props.id }).then(res => {
+				
 				this.setState({
 					tableData: res.data.payouts,
 					page: 0,

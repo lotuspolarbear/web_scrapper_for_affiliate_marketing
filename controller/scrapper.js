@@ -9,16 +9,16 @@ const Referral = require("../models/Referral");
 const Visit = require("../models/Visit");
 const Payout = require("../models/Payout");
 
-module.exports.doScrape = function(account) {
+module.exports.doScrape = async function(account) {
 	async function statisticsScrap(browser, cookies) {
 		const statisticsPage = await browser.newPage();
 		await statisticsPage.setCookie(...cookies);
-		await statisticsPage.goto(account.loginUrl + "?tab=stats", { waitUntil: "networkidle0", timeout: 0 });
+		await statisticsPage.goto(account.loginUrl + "?tab=stats", { waitUntil: 'domcontentloaded' });
 		var html = await statisticsPage.content();
 		let $ = cheerio.load(html);
 		let tds = [];
 
-		$("td").each(function(i, e) {
+		$(".affwp-table td").each(function(i, e) {
 			tds[i] = $(this).text();
 		});
 		var unpaidReferrals = tds[0];
@@ -74,13 +74,12 @@ module.exports.doScrape = function(account) {
 					"/page/" +
 					pageNumber.toString() +
 					"?tab=referrals#affwp-affiliate-dashboard-referrals",
-				{ waitUntil: "networkidle0", timeout: 0 }
+				{ waitUntil: 'domcontentloaded' }
 			);
 			var html = await referralsPage.content();
 			let $ = cheerio.load(html);
 
-			var rows = $("tbody tr");
-
+			var rows = $(".affwp-table tbody tr");
 			if (rows.length == 1) {
 				scrapFlag = false;
 			} else {
@@ -173,12 +172,12 @@ module.exports.doScrape = function(account) {
 		while (scrapFlag) {
 			await visitsPage.goto(
 				account.loginUrl + "/page/" + pageNumber.toString() + "?tab=visits#affwp-affiliate-dashboard-visits",
-				{ waitUntil: "networkidle0", timeout: 0 }
+				{ waitUntil: 'domcontentloaded' }
 			);
 			var html = await visitsPage.content();
 			let $ = cheerio.load(html);
 
-			var rows = $("tbody tr");
+			var rows = $(".affwp-table tbody tr");
 
 			if (rows.length == 1) {
 				scrapFlag = false;
@@ -257,12 +256,12 @@ module.exports.doScrape = function(account) {
 		while (scrapFlag) {
 			await payoutsPage.goto(
 				account.loginUrl + "/page/" + pageNumber.toString() + "?tab=payouts#affwp-affiliate-dashboard-payouts",
-				{ waitUntil: "networkidle0", timeout: 0 }
+				{ waitUntil: 'domcontentloaded' }
 			);
 			var html = await payoutsPage.content();
 			let $ = cheerio.load(html);
 
-			var rows = $("tbody tr");
+			var rows = $(".affwp-table tbody tr");
 
 			if (rows.length == 1) {
 				scrapFlag = false;
@@ -323,31 +322,43 @@ module.exports.doScrape = function(account) {
 	}
 
 	async function run() {
-		var loginPassword = Crypto.decrypt(account.password);
 		const browser = await puppeteer.launch({ headless: false });
 		const loginPage = await browser.newPage();
+		try{
+			var loginPassword = Crypto.decrypt(account.password);
 
-		await loginPage.goto(account.loginUrl, { waitUntil: "networkidle0", timeout: 0 });
+			await loginPage.goto(account.loginUrl, { waitUntil: 'domcontentloaded' });
 
-		const USERNAME_SELECTOR = "#affwp-login-user-login";
-		const PASSWORD_SELECTOR = "#affwp-login-user-pass";
-		const BUTTON_SELECTOR = "#affwp-login-form .button";
-		await loginPage.click(USERNAME_SELECTOR);
-		await loginPage.keyboard.type(account.username);
+			const USERNAME_SELECTOR = "#affwp-login-user-login";
+			const PASSWORD_SELECTOR = "#affwp-login-user-pass";
+			const BUTTON_SELECTOR = "#affwp-login-form .button";
+			await loginPage.click(USERNAME_SELECTOR);
+			await loginPage.keyboard.type(account.username);
 
-		await loginPage.click(PASSWORD_SELECTOR);
-		await loginPage.keyboard.type(loginPassword);
+			await loginPage.click(PASSWORD_SELECTOR);
+			await loginPage.keyboard.type(loginPassword);
 
-		await loginPage.click(BUTTON_SELECTOR);
+			await loginPage.click(BUTTON_SELECTOR);
 
-		await loginPage.waitForNavigation();
+			await loginPage.waitForNavigation();
 
-		const cookies = await loginPage.cookies();
-		statisticsScrap(browser, cookies);
-		referralsScrap(browser, cookies);
-		visitsScrap(browser, cookies);
-		payoutsScrap(browser, cookies);
+			const cookies = await loginPage.cookies();
+			//await statisticsScrap(browser, cookies);
+			//await referralsScrap(browser, cookies);
+			//await visitsScrap(browser, cookies);
+			await payoutsScrap(browser, cookies);
+			browser.close();
+			var d = new Date();
+			console.log("Scrapping of " + account.username + "is completed in " + d.toTimeString());
+			return 1;
+		}catch(err){
+			browser.close();
+			var d = new Date();
+			console.log("error occured in scrapping of " +account.username + " in "+ d.toTimeString());
+			return 1;
+		}
+		
 	}
-
-	run();
+	var result = await run();
+	if(result == 1) return 1;
 };

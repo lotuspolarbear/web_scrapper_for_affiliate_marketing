@@ -22,6 +22,10 @@ const PayoutSchema = new Schema({
 	},
 	scrappedDate: {
 		type: String
+	},
+	verified: {
+		type: Boolean,
+		default: false
 	}
 });
 
