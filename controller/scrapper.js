@@ -320,7 +320,195 @@ module.exports.doScrape = async function(account) {
 		}
 		console.log(newPayouts.length + " payouts are added to " + account.username);
 	}
+	async function commisstionsScrapForPostAffiliatesPro(browser, cookies) {
+		let lastRef;
+		let newRefs = [];
 
+		await Referral.find({ subAcctId: account._id })
+			.sort({ _id: -1 })
+			.limit(1)
+			.then(doc => (lastRef = doc));
+
+		const referralsPage = await browser.newPage();
+		await referralsPage.setCookie(...cookies);
+		await referralsPage.goto(
+			account.loginUrl.substr(0, account.loginUrl.lastIndexOf("/") + 1) + "panel.php#Transactions-List",
+			{ waitUntil: 'domcontentloaded' }
+		);
+		await referralsPage.waitFor(20000);
+		var scrapFlag = true;
+		while(scrapFlag) {
+			var html = await referralsPage.content();
+			let $ = cheerio.load(html);
+			var rows = $(".GridRow");
+			if (rows.length === 0) {
+				scrapFlag = false;
+			} else {
+				for (var i = 0; i < rows.length; i++) {
+					var current = rows[i];
+					var dataTexts = $(current).find(".DataText");
+					var refferId = $(dataTexts[2])
+						.text()
+						.trim();
+					var amount = parseFloat(
+						$(dataTexts[1])
+							.text()
+							.trim()
+							.replace("$ ‎", "")
+							.replace(/,/g, "")
+					);
+					var description = $(dataTexts[5])
+						.text()
+						.trim();
+					var status = $(dataTexts[4])
+						.text()
+						.trim();
+					var refDate = date.format(
+						new Date(
+							$(dataTexts[3])
+								.text()
+								.trim()
+						),
+						"MM-DD-YY HH:mm"
+					);
+					var variationId = "";
+
+					if (
+						lastRef.length > 0 &&
+						lastRef[0].refferId == refferId &&
+						lastRef[0].amount == amount &&
+						lastRef[0].description == description &&
+						lastRef[0].status == status &&
+						lastRef[0].refDate == refDate &&
+						lastRef[0].variationId == variationId
+					) {
+						console.log("Last referral document found.");
+						scrapFlag = false;
+						break;
+					} else {
+						var data = {
+							subAcctId: account._id,
+							refferId: refferId,
+							amount: amount,
+							variationId: variationId,
+							description: description,
+							status: status,
+							refDate: refDate,
+							scrappedDate: date.format(new Date(), "MM-DD-YY HH:mm")
+						};
+						newRefs.push(data);
+					}
+				}
+				var nextPageBtn = $(".GridBottom .pagination .PagerRight");
+				if(nextPageBtn.hasClass("PagerRight-disabled")) {
+					scrapFlag = false;					
+				} else {				
+					const BUTTON_SELECTOR = ".GridBottom .pagination .PagerRight";
+					await referralsPage.click(BUTTON_SELECTOR);
+					await referralsPage.waitFor(3000);
+				}
+			}			
+		}
+		for (var i = newRefs.length - 1; i > -1; i--) {
+			Referral.addReferral(newRefs[i]);
+		}
+		console.log(newRefs.length + " referrals are added to " + account.username);
+	}
+	async function payoutsScrapForPostAffiliatesPro(browser, cookies) {
+		let lastPayout;
+		let newPayouts = [];
+
+		await Payout.find({ subAcctId: account._id })
+			.sort({ _id: -1 })
+			.limit(1)
+			.then(doc => (lastPayout = doc));
+
+		const payoutsPage = await browser.newPage();
+		await payoutsPage.setCookie(...cookies);
+
+		await payoutsPage.goto(
+			account.loginUrl.substr(0, account.loginUrl.lastIndexOf("/") + 1) + "panel.php#Payouts",
+			{ waitUntil: 'domcontentloaded' }
+		);
+		await payoutsPage.waitFor(30000);
+		var html = await payoutsPage.content();
+		let $ = cheerio.load(html);
+
+		var rows = $(".GridRow");
+		for (var i = 0; i < rows.length; i++) {
+			var current = rows[i];
+			var dataTexts = $(current).find(".DataText");
+			var payoutDate = date.format(
+				new Date(
+					$(dataTexts[1])
+						.text()
+						.trim()
+				),
+				"MM-DD-YY HH:mm"
+			);
+			var amount = parseFloat(
+				$(dataTexts[2])
+					.text()
+					.trim()
+					.replace("$ ‎", "")
+					.replace(/,/g, "")
+			);
+			var payoutMethod = "";
+			var status = "";
+			if (
+				lastPayout.length > 0 &&
+				lastPayout[0].payoutDate == payoutDate &&
+				lastPayout[0].amount == amount &&
+				lastPayout[0].payoutMethod == payoutMethod &&
+				lastPayout[0].status == status
+			) {
+				console.log("Last payout document found.");
+				break;
+			} else {
+				var data = {
+					subAcctId: account._id,
+					payoutDate: payoutDate,
+					amount: amount,
+					payoutMethod: payoutMethod,
+					status: status,
+					scrappedDate: date.format(new Date(), "MM-DD-YY HH:mm")
+				};
+				newPayouts.push(data);
+			}
+		}
+		for (var i = newPayouts.length - 1; i > -1; i--) {
+			Payout.addPayout(newPayouts[i]);
+		}
+		console.log(newPayouts.length + " payouts are added to " + account.username);
+	}
+
+	async function testrun() {
+		const browser = await puppeteer.launch({ headless: false });
+		const loginPage = await browser.newPage();
+		var loginPassword = Crypto.decrypt(account.password);
+
+		await loginPage.goto(account.loginUrl, { waitUntil: 'domcontentloaded' });
+		await loginPage.waitFor(10000);
+		var html = await loginPage.content();
+		let $ = cheerio.load(html);
+
+		const USERNAME_SELECTOR = "input[name='username']";
+		const PASSWORD_SELECTOR = "input[name='password']";
+		const BUTTON_SELECTOR = ".ImLeButtonMain";
+		await loginPage.click(USERNAME_SELECTOR);
+		await loginPage.keyboard.type(account.username);
+
+		await loginPage.click(PASSWORD_SELECTOR);
+		await loginPage.keyboard.type(loginPassword);
+
+		await loginPage.click(BUTTON_SELECTOR);
+
+		await loginPage.waitForNavigation();
+
+		const cookies = await loginPage.cookies();
+		await commisstionsScrapForPostAffiliatesPro(browser, cookies);
+		return 1;
+	}
 	async function run() {
 		const browser = await puppeteer.launch({ headless: false });
 		const loginPage = await browser.newPage();
@@ -328,37 +516,68 @@ module.exports.doScrape = async function(account) {
 			var loginPassword = Crypto.decrypt(account.password);
 
 			await loginPage.goto(account.loginUrl, { waitUntil: 'domcontentloaded' });
+			await loginPage.waitFor(10000);
+			var html = await loginPage.content();
+			let $ = cheerio.load(html);
 
-			const USERNAME_SELECTOR = "#affwp-login-user-login";
-			const PASSWORD_SELECTOR = "#affwp-login-user-pass";
-			const BUTTON_SELECTOR = "#affwp-login-form .button";
-			await loginPage.click(USERNAME_SELECTOR);
-			await loginPage.keyboard.type(account.username);
+			var inputsForPostAffiliatesPro = $(".pap-form-control");
+			
+			if(inputsForPostAffiliatesPro.length > 0) {
 
-			await loginPage.click(PASSWORD_SELECTOR);
-			await loginPage.keyboard.type(loginPassword);
+				console.log("This site uses Post Affiliates Pro Plugin.");
 
-			await loginPage.click(BUTTON_SELECTOR);
+				const USERNAME_SELECTOR = "input[name='username']";
+				const PASSWORD_SELECTOR = "input[name='password']";
+				const BUTTON_SELECTOR = ".ImLeButtonMain";
+				await loginPage.click(USERNAME_SELECTOR);
+				await loginPage.keyboard.type(account.username);
 
-			await loginPage.waitForNavigation();
+				await loginPage.click(PASSWORD_SELECTOR);
+				await loginPage.keyboard.type(loginPassword);
 
-			const cookies = await loginPage.cookies();
-			//await statisticsScrap(browser, cookies);
-			//await referralsScrap(browser, cookies);
-			//await visitsScrap(browser, cookies);
-			await payoutsScrap(browser, cookies);
-			browser.close();
-			var d = new Date();
-			console.log("Scrapping of " + account.username + "is completed in " + d.toTimeString());
-			return 1;
+				await loginPage.click(BUTTON_SELECTOR);
+
+				await loginPage.waitForNavigation();
+
+				const cookies = await loginPage.cookies();
+				await commisstionsScrapForPostAffiliatesPro(browser, cookies);
+				await payoutsScrapForPostAffiliatesPro(browser, cookies);
+				browser.close();
+				var d = new Date();
+				console.log("Scrapping of " + account.username + "is completed in " + d.toTimeString());
+				return 1;
+			} else {
+				const USERNAME_SELECTOR = "#affwp-login-user-login";
+				const PASSWORD_SELECTOR = "#affwp-login-user-pass";
+				const BUTTON_SELECTOR = "#affwp-login-form .button";
+				await loginPage.click(USERNAME_SELECTOR);
+				await loginPage.keyboard.type(account.username);
+
+				await loginPage.click(PASSWORD_SELECTOR);
+				await loginPage.keyboard.type(loginPassword);
+
+				await loginPage.click(BUTTON_SELECTOR);
+
+				await loginPage.waitForNavigation();
+
+				const cookies = await loginPage.cookies();
+				await statisticsScrap(browser, cookies);
+				await referralsScrap(browser, cookies);
+				await visitsScrap(browser, cookies);
+				await payoutsScrap(browser, cookies);
+				browser.close();
+				var d = new Date();
+				console.log("Scrapping of " + account.username + "is completed in " + d.toTimeString());
+				return 1;	
+			}
 		}catch(err){
 			browser.close();
 			var d = new Date();
 			console.log("error occured in scrapping of " +account.username + " in "+ d.toTimeString());
 			return 1;
 		}
-		
 	}
 	var result = await run();
+	//var result = await testrun();
 	if(result == 1) return 1;
 };

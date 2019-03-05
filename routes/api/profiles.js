@@ -46,4 +46,4 @@ router.get('/getAllProfiles', (req, res) => {
     Profile.find().sort({name: -1}).then(profiles => res.json(profiles));
 })
 
-module.exports = router;
+module.exports = router;                                    
