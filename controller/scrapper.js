@@ -320,6 +320,76 @@ module.exports.doScrape = async function(account) {
 		}
 		console.log(newPayouts.length + " payouts are added to " + account.username);
 	}
+	
+	async function payoutsScrapForPostAffiliatesPro(browser, cookies) {
+		let lastPayout;
+		let newPayouts = [];
+	
+
+		await Payout.find({ subAcctId: account._id })
+			.sort({ _id: -1 })
+			.limit(1)
+			.then(doc => (lastPayout = doc));
+
+		const payoutsPage = await browser.newPage();
+		await payoutsPage.setCookie(...cookies);
+
+		await payoutsPage.goto(
+			account.loginUrl.substr(0, account.loginUrl.lastIndexOf("/") + 1) + "panel.php#Payouts",
+			{ waitUntil: 'domcontentloaded' }
+		);
+		await payoutsPage.waitFor(30000);
+		var html = await payoutsPage.content();
+		let $ = cheerio.load(html);
+
+		var rows = $(".GridRow");
+		for (var i = 0; i < rows.length; i++) {
+			var current = rows[i];
+			var dataTexts = $(current).find(".DataText");
+			var payoutDate = date.format(
+				new Date(
+					$(dataTexts[1])
+						.text()
+						.trim()
+				),
+				"MM-DD-YY HH:mm"
+			);
+			var amount = parseFloat(
+				$(dataTexts[2])
+					.text()
+					.trim()
+					.replace("$ ‎", "")
+					.replace(/,/g, "")
+			);
+			var payoutMethod = "";
+			var status = "";
+			if (
+				lastPayout.length > 0 &&
+				lastPayout[0].payoutDate == payoutDate &&
+				lastPayout[0].amount == amount &&
+				lastPayout[0].payoutMethod == payoutMethod &&
+				lastPayout[0].status == status
+			) {
+				console.log("Last payout document found.");
+				break;
+			} else {
+				var data = {
+					subAcctId: account._id,
+					payoutDate: payoutDate,
+					amount: amount,
+					payoutMethod: payoutMethod,
+					status: status,
+					scrappedDate: date.format(new Date(), "MM-DD-YY HH:mm")
+				};
+				newPayouts.push(data);
+			}
+		}
+		for (var i = newPayouts.length - 1; i > -1; i--) {
+			Payout.addPayout(newPayouts[i]);
+		}
+		console.log(newPayouts.length + " payouts are added to " + account.username);
+	}
+
 	async function commisstionsScrapForPostAffiliatesPro(browser, cookies) {
 		let lastRef;
 		let newRefs = [];
@@ -414,74 +484,7 @@ module.exports.doScrape = async function(account) {
 		}
 		console.log(newRefs.length + " referrals are added to " + account.username);
 	}
-	async function payoutsScrapForPostAffiliatesPro(browser, cookies) {
-		let lastPayout;
-		let newPayouts = [];
-
-		await Payout.find({ subAcctId: account._id })
-			.sort({ _id: -1 })
-			.limit(1)
-			.then(doc => (lastPayout = doc));
-
-		const payoutsPage = await browser.newPage();
-		await payoutsPage.setCookie(...cookies);
-
-		await payoutsPage.goto(
-			account.loginUrl.substr(0, account.loginUrl.lastIndexOf("/") + 1) + "panel.php#Payouts",
-			{ waitUntil: 'domcontentloaded' }
-		);
-		await payoutsPage.waitFor(30000);
-		var html = await payoutsPage.content();
-		let $ = cheerio.load(html);
-
-		var rows = $(".GridRow");
-		for (var i = 0; i < rows.length; i++) {
-			var current = rows[i];
-			var dataTexts = $(current).find(".DataText");
-			var payoutDate = date.format(
-				new Date(
-					$(dataTexts[1])
-						.text()
-						.trim()
-				),
-				"MM-DD-YY HH:mm"
-			);
-			var amount = parseFloat(
-				$(dataTexts[2])
-					.text()
-					.trim()
-					.replace("$ ‎", "")
-					.replace(/,/g, "")
-			);
-			var payoutMethod = "";
-			var status = "";
-			if (
-				lastPayout.length > 0 &&
-				lastPayout[0].payoutDate == payoutDate &&
-				lastPayout[0].amount == amount &&
-				lastPayout[0].payoutMethod == payoutMethod &&
-				lastPayout[0].status == status
-			) {
-				console.log("Last payout document found.");
-				break;
-			} else {
-				var data = {
-					subAcctId: account._id,
-					payoutDate: payoutDate,
-					amount: amount,
-					payoutMethod: payoutMethod,
-					status: status,
-					scrappedDate: date.format(new Date(), "MM-DD-YY HH:mm")
-				};
-				newPayouts.push(data);
-			}
-		}
-		for (var i = newPayouts.length - 1; i > -1; i--) {
-			Payout.addPayout(newPayouts[i]);
-		}
-		console.log(newPayouts.length + " payouts are added to " + account.username);
-	}
-
+	
 	async function testrun() {
 		const browser = await puppeteer.launch({ headless: false });
 		const loginPage = await browser.newPage();

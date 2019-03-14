@@ -37,6 +37,9 @@ class AppNavbar extends Component {
 								{localStorage.getItem("user") && (
 									<React.Fragment>
 										<NavItem>
+											<NavLink href='/home/'>Home</NavLink>
+										</NavItem>
+										<NavItem>
 											<NavLink href='/dashboard/'>Dashboard</NavLink>
 										</NavItem>
 										<UncontrolledDropdown nav inNavbar>

@@ -6,6 +6,7 @@ const path = require("path");
 const merchants = require("./routes/api/merchants");
 const subaccounts = require("./routes/api/subaccounts");
 const profiles = require("./routes/api/profiles");
+const dashboards = require("./routes/api/dashboards");
 const statistics = require("./routes/api/statistics");
 const referrals = require("./routes/api/referrals");
 const visits = require("./routes/api/visits");
@@ -30,12 +31,13 @@ mongoose
 app.use("/api/merchants", merchants);
 app.use("/api/subaccounts", subaccounts);
 app.use("/api/profiles", profiles);
+app.use("/api/dashboards", dashboards);
 app.use("/api/statistics", statistics);
 app.use("/api/referrals", referrals);
 app.use("/api/visits", visits);
 app.use("/api/payouts", payouts);
 
-//crons.prepareCron();
+crons.prepareCron();
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === "production") {

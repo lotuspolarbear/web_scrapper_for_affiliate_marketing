@@ -11,8 +11,6 @@ import Payouts from "./Payouts";
 import Visits from "./Visits";
 import { Input } from "reactstrap";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
 
 function TabContainer(props) {
 	return <div style={{ padding: 20 }}>{props.children}</div>;
