@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, InlineDatePicker } from 'material-ui-pickers';
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
 
 import PropTypes from "prop-types";
 import InfoIcon from "@material-ui/icons/Info";
@@ -86,15 +87,17 @@ class Home extends Component {
         super(props);
         this.state = {
             overview: [],
-            personalOverview: []
+            personalOverview: [],
+            startDate: new Date(),
+            endDate: new Date()
         }
 	}
 
 	async componentDidMount() {
-		await axios.get("/api/dashboards/getOverview").then(res => {
+		await axios.get("/api/home/getOverview").then(res => {
             this.setState({ overview: res.data });
         });
-        await axios.get("/api/dashboards/getPersonalOverview").then(res => {
+        await axios.get("/api/home/getPersonalOverview").then(res => {
             this.setState({personalOverview: res.data});
         })
 	}
@@ -171,13 +174,44 @@ class Home extends Component {
             </TableRow>                                        
         );
     }
+    handleStartDateChange = date => {
+        this.setState({ startDate: date });
+    };
+    handleEndDateChange = date => {
+        this.setState({ endDate: date });
+        console.log(date);
+    };
 	render() {
         var overviews = this.state.personalOverview;
         const { classes } = this.props;
-        
+        const { startDate, endDate } = this.state;
 		return (
 			
             <div className='container'>
+                <div className='row'>
+                    <div className='col-md-3 offset-md-6'>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <InlineDatePicker
+                                keyboard
+                                variant="outlined"
+                                value={startDate}
+                                format="dd MMM yyyy"
+                                onChange={this.handleStartDateChange}                                
+                            />
+                        </MuiPickersUtilsProvider>
+                    </div>
+                    <div className='col-md-3'>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <InlineDatePicker
+                                keyboard
+                                variant="outlined"
+                                value={endDate}
+                                format="dd MMM yyyy"
+                                onChange={this.handleEndDateChange}                                
+                            />
+                        </MuiPickersUtilsProvider>
+                    </div>
+                </div>
                 <div className='row'>
                     <div className='col-md-3'>
                         <div className='homepage-border'>

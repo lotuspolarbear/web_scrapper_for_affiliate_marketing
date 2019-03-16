@@ -23,7 +23,7 @@ async function getAllSubAccounts(){
 		if (err) {
 			console.log("Can't get sub accounts to scrap.");
 		} else {
-			//Scrapper.doScrape(accounts[3]);
+			//Scrapper.doScrape(accounts[7]);
 			// for(var i = 0 ; i < accounts.length ; i ++){
 			// 	// var result = 0;
 			// 	// result = await Scrapper.doScrape(accounts[i]);

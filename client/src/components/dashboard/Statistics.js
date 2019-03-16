@@ -17,7 +17,7 @@ import LastPageIcon from "@material-ui/icons/LastPage";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider, DatePicker } from "material-ui-pickers";
+import { MuiPickersUtilsProvider, InlineDatePicker } from "material-ui-pickers";
 
 const actionsStyles = theme => ({
 	root: {
@@ -116,7 +116,8 @@ const styles = theme => ({
 		fontSize: "1rem"
 	},
 	tableWrapper: {
-		overflowX: "auto"
+		overflowX: "auto",
+		paddingTop: theme.spacing.unit * 3
 	}
 });
 
@@ -237,10 +238,11 @@ class Statistics extends React.Component {
 					<div className={classes.tableWrapper}>
 						<MuiPickersUtilsProvider utils={DateFnsUtils}>
 							<Grid container className={classes.grid} justify='flex-end'>
-								<DatePicker
-									className='margin-right-50 date-picker'
-									margin='normal'
-									label='Date picker'
+								<InlineDatePicker
+									className='margin-right-50'
+									keyboard
+									variant="outlined"
+									format="dd MMM yyyy"
 									value={selectedDate}
 									onChange={this.handleDateChange}
 								/>

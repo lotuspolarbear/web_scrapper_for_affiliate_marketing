@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
 import {
 	Collapse,
 	Navbar,
@@ -30,32 +31,26 @@ class AppNavbar extends Component {
 			<div>
 				<Navbar color='dark' dark expand='sm' className='mb-5'>
 					<Container>
-						<NavbarBrand href='/'>Affiliate Marketing Web Scrapping</NavbarBrand>
+						<Link className='navbar-brand' to='/'>Affiliate Marketing Web Scrapping</Link>
 						<NavbarToggler onClick={this.toggle} />
 						<Collapse isOpen={this.state.isOpen} navbar>
 							<Nav className='ml-auto' navbar>
 								{localStorage.getItem("user") && (
 									<React.Fragment>
 										<NavItem>
-											<NavLink href='/home/'>Home</NavLink>
+											<Link className='nav-link' to='/home'>Home</Link>
 										</NavItem>
 										<NavItem>
-											<NavLink href='/dashboard/'>Dashboard</NavLink>
+											<Link className='nav-link' to='/dashboard'>Dashboard</Link>
 										</NavItem>
 										<UncontrolledDropdown nav inNavbar>
 											<DropdownToggle nav caret>
 												Management
 											</DropdownToggle>
-											<DropdownMenu>
-												<DropdownItem tag='a' href='/merchant/management'>
-													Merchants
-												</DropdownItem>
-												<DropdownItem tag='a' href='/subaccount/management'>
-													Sub Accounts
-												</DropdownItem>
-												<DropdownItem tag='a' href='/profile/management'>
-													Profiles
-												</DropdownItem>
+											<DropdownMenu>												
+												<Link className='dropdown-item' to='/merchant/management'>Merchants</Link>
+												<Link className='dropdown-item' to='/subaccount/management'>Sub Accounts</Link>
+												<Link className='dropdown-item' to='/profile/management'>Profiles</Link>
 											</DropdownMenu>
 										</UncontrolledDropdown>
 										<UncontrolledDropdown nav inNavbar>
@@ -63,32 +58,16 @@ class AppNavbar extends Component {
 												Register
 											</DropdownToggle>
 											<DropdownMenu>
-												<DropdownItem tag='a' href='/merchant/register'>
-													Merchant
-												</DropdownItem>
-												<DropdownItem tag='a' href='/subaccount/register'>
-													Sub Account
-												</DropdownItem>
-												<DropdownItem tag='a' href='/profile/register'>
-													Profile
-												</DropdownItem>
+												<Link className='dropdown-item' to='/merchant/register'>Merchant</Link>
+												<Link className='dropdown-item' to='/subaccount/register'>Sub Account</Link>
+												<Link className='dropdown-item' to='/profile/register'>Profile</Link>												
 											</DropdownMenu>
 										</UncontrolledDropdown>
 										<NavItem>
-											<NavLink href='/logout/'>Logout</NavLink>
+											<Link className='nav-link' to='/logout'>Logout</Link>
 										</NavItem>
 									</React.Fragment>
 								)}
-								{/* {!localStorage.getItem("user") && (
-									<React.Fragment>
-										<NavItem>
-											<NavLink href='/login/'>Login</NavLink>
-										</NavItem>
-										<NavItem>
-											<NavLink href='/register/'>Register</NavLink>
-										</NavItem>
-									</React.Fragment>
-								)} */}
 							</Nav>
 						</Collapse>
 					</Container>

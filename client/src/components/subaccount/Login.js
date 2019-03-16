@@ -58,7 +58,7 @@ class Login extends Component {
 		const { isLoggedin } = this.state;
 		return (
 			<React.Fragment>
-				{isLoggedin && <Redirect to='/Dashboard' />}
+				{isLoggedin && <Redirect to='/home' />}
 				{!isLoggedin && (
 					<div className='container'>
 						<div className='row'>
