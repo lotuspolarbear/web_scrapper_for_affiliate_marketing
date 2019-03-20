@@ -129,6 +129,51 @@ class Home extends Component {
         }			
         return result + fraction;
     }
+    renderProfile(overview, index) {
+        const lists = overview.info;
+        var sumCommNet = 0, sumCommGross = 0, sumSales = 0, sumClicks = 0, sumEPC = 0, sumCR = 0;
+        for(var i=0; i<lists.length; i++){
+            sumCommNet += lists[i].commNet;
+            sumCommGross += lists[i].commGross;
+            sumSales += lists[i].sales;
+            sumClicks += lists[i].clicks;
+            // sumEPC += lists[i].EPC;
+            // sumCR += lists[i].commRate;
+        }
+        if(overview.expand === true ){
+            return (
+                <TableRow
+                    hover
+                    key={index}
+                    onClick = {event => this.dropdownExpand(index)}                                                        
+                >
+                    <TableCell className="border-bottom-black"><ArrowDropUpIcon /> {overview.profileName} ({overview.info.length}) </TableCell>
+                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                    <TableCell align={"right"} className="border-bottom-black"></TableCell>                                            
+                </TableRow>                                        
+            );
+        } else {
+            return (
+                <TableRow
+                    hover
+                    key={index}
+                    onClick = {event => this.dropdownExpand(index)}                                                        
+                >
+                    <TableCell className="border-bottom-black"><ArrowDropDownIcon /> {overview.profileName} ({overview.info.length}) </TableCell>
+                    <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(sumCommNet.toFixed(2))}</TableCell>
+                    <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(sumCommGross.toFixed(2))}</TableCell>
+                    <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(sumSales)}</TableCell>
+                    <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(sumClicks)}</TableCell>
+                    <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(lists[0].EPC)}</TableCell>
+                    <TableCell align={"right"} className="border-bottom-black">{lists[0].commRate}%</TableCell>                                            
+                </TableRow>                                        
+            );
+        }
+    }
     renderLists(nodes) {
         const lists = nodes;
         return lists
@@ -149,8 +194,8 @@ class Home extends Component {
                 );
             })
     }
-    renderListSum(overview, index) {
-        const lists = overview.info;
+    renderProfileSum(nodes) {
+        const lists = nodes;
         var sumCommNet = 0, sumCommGross = 0, sumSales = 0, sumClicks = 0, sumEPC = 0, sumCR = 0;
         for(var i=0; i<lists.length; i++){
             sumCommNet += lists[i].commNet;
@@ -160,39 +205,19 @@ class Home extends Component {
             // sumEPC += lists[i].EPC;
             // sumCR += lists[i].commRate;
         }
-        if(overview.expand === true ){
-            return (
-                <TableRow
-                    hover
-                    key={index}
-                    onClick = {event => this.dropdownExpand(index)}                                                        
+        return (
+            <TableRow
+                    hover                                                    
                 >
-                    <TableCell className="border-bottom-black">{overview.profileName} ({overview.info.length}) <ArrowDropUpIcon className="float-right" /></TableCell>
+                    <TableCell className="border-bottom-black"></TableCell>
                     <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(sumCommNet.toFixed(2))}</TableCell>
                     <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(sumCommGross.toFixed(2))}</TableCell>
                     <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(sumSales)}</TableCell>
                     <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(sumClicks)}</TableCell>
                     <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(lists[0].EPC)}</TableCell>
                     <TableCell align={"right"} className="border-bottom-black">{lists[0].commRate}%</TableCell>                                            
-                </TableRow>                                        
-            );
-        } else {
-            return (
-                <TableRow
-                    hover
-                    key={index}
-                    onClick = {event => this.dropdownExpand(index)}                                                        
-                >
-                    <TableCell className="border-bottom-black">{overview.profileName} ({overview.info.length}) <ArrowDropDownIcon className="float-right" /></TableCell>
-                    <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(sumCommNet.toFixed(2))}</TableCell>
-                    <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(sumCommGross.toFixed(2))}</TableCell>
-                    <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(sumSales)}</TableCell>
-                    <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(sumClicks)}</TableCell>
-                    <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(lists[0].EPC)}</TableCell>
-                    <TableCell align={"right"} className="border-bottom-black">{lists[0].commRate}%</TableCell>                                            
-                </TableRow>                                        
-            );
-        }
+                </TableRow>
+        )
     }
     handleStartDateChange = date => {
         this.setState({ startDate: date });
@@ -299,40 +324,21 @@ class Home extends Component {
                             <TableBody>
                                 {overviews
                                 .map((overview, index) => {
-                                    if(overview.info.length === 1){
+                                    if(overview.expand === true ){
                                         return (
                                             <React.Fragment key={index}>
-                                                <TableRow
-                                                    hover
-                                                    key={index}
-                                                >
-                                                    <TableCell align={"left"} className="border-bottom-black">{overview.info[0].name} (1)</TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(overview.info[0].commNet)}</TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(overview.info[0].commGross)}</TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(overview.info[0].sales)}</TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(overview.info[0].clicks)}</TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(overview.info[0].EPC)}</TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black">{overview.info[0].commRate}%</TableCell>                                            
-                                                </TableRow>
+                                                { this.renderProfile(overview, index) }
+                                                { this.renderLists(overview.info) }
+                                                { this.renderProfileSum(overview.info) }
                                             </React.Fragment>
                                         );
                                     } else {
-                                        if(overview.expand === true ){
-                                            return (
-                                                <React.Fragment key={index}>
-                                                    { this.renderListSum(overview, index) }
-                                                    { this.renderLists(overview.info) }                                                    
-                                                </React.Fragment>
-                                            );
-                                        } else {
-                                            return (
-                                                <React.Fragment key={index}>
-                                                    { this.renderListSum(overview, index) }
-                                                </React.Fragment>
-                                            );
-                                        }
-                                                                              
-                                    }                                    
+                                        return (
+                                            <React.Fragment key={index}>
+                                                { this.renderProfile(overview, index) }
+                                            </React.Fragment>
+                                        );
+                                    }
                                 })}
                             </TableBody>
                         </Table>
