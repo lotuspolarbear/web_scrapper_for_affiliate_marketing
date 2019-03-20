@@ -11,6 +11,8 @@ import TableRow from "@material-ui/core/TableRow";
 
 import PropTypes from "prop-types";
 import InfoIcon from "@material-ui/icons/Info";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import axios from "axios";
@@ -114,10 +116,10 @@ class Home extends Component {
                 fraction = tempString.slice(tempString.indexOf('.'));
             }
             temp = parseInt(temp).toString();
-            var dots = 0;				
+            var dots = 0;
             if(temp.length % 3 === 0){
                 dots = parseInt(temp.length / 3) - 1;
-            } else {				
+            } else {
                 dots = parseInt(temp.length / 3);
             }
             for(var i = dots; i >= 1; i--){
@@ -133,8 +135,7 @@ class Home extends Component {
             .map((item, index) => {
                 return (
                     <TableRow
-                        hover
-                        tabIndex={-1}
+                        hover                        
                         key={index}
                     >
                         <TableCell className="padding-left-50 home-child">{item.name}</TableCell>
@@ -161,8 +162,7 @@ class Home extends Component {
         }
         return (
             <TableRow
-                hover
-                tabIndex={-1}
+                hover                
             >
                 <TableCell className="border-bottom-black"></TableCell>
                 <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(sumCommNet.toFixed(2))}</TableCell>
@@ -181,6 +181,11 @@ class Home extends Component {
         this.setState({ endDate: date });
         console.log(date);
     };
+    dropdownExpand(index){        
+        var newOverviews = this.state.personalOverview;        
+        newOverviews[index].expand = !newOverviews[index].expand;
+        this.setState({personalOverview: newOverviews});
+    }
 	render() {
         var overviews = this.state.personalOverview;
         const { classes } = this.props;
@@ -279,10 +284,9 @@ class Home extends Component {
                                             <React.Fragment key={index}>
                                                 <TableRow
                                                     hover
-                                                    tabIndex={-1}
-                                                    key={overview.profileId}
+                                                    key={index}
                                                 >
-                                                    <TableCell align={"left"} className="border-bottom-black">{overview.info[0].name}</TableCell>
+                                                    <TableCell align={"left"} className="border-bottom-black">{overview.info[0].name} (1)</TableCell>
                                                     <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(overview.info[0].commNet)}</TableCell>
                                                     <TableCell align={"right"} className="border-bottom-black">${this.formatAmount(overview.info[0].commGross)}</TableCell>
                                                     <TableCell align={"right"} className="border-bottom-black">{this.formatAmount(overview.info[0].sales)}</TableCell>
@@ -293,25 +297,44 @@ class Home extends Component {
                                             </React.Fragment>
                                         );
                                     } else {
-                                        return (
-                                            <React.Fragment key={index}>
-                                                <TableRow
-                                                    hover
-                                                    tabIndex={-1}
-                                                    key={overview.profileId}                                                    
-                                                >
-                                                    <TableCell align={"left"} className="border-bottom-black">{overview.profileName}</TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black"></TableCell>
-                                                    <TableCell align={"right"} className="border-bottom-black"></TableCell>                                            
-                                                </TableRow>
-                                                { this.renderLists(overview.info) }
-                                                { this.renderListSum(overview.info) }
-                                            </React.Fragment>
-                                        );                                        
+                                        if(overview.expand === true ){
+                                            return (
+                                                <React.Fragment key={index}>
+                                                    <TableRow
+                                                        hover
+                                                        key={index}
+                                                    >
+                                                        <TableCell align={"left"} className="border-bottom-black">{overview.profileName} ({overview.info.length})</TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black" onClick = {event => this.dropdownExpand(index)} ><ArrowDropUpIcon /></TableCell>                                            
+                                                    </TableRow>
+                                                    { this.renderLists(overview.info) }
+                                                    { this.renderListSum(overview.info) }
+                                                </React.Fragment>
+                                            );
+                                        } else {
+                                            return (
+                                                <React.Fragment key={index}>
+                                                    <TableRow
+                                                        hover
+                                                        key={index}
+                                                    >
+                                                        <TableCell align={"left"} className="border-bottom-black">{overview.profileName} ({overview.info.length})</TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black"></TableCell>
+                                                        <TableCell align={"right"} className="border-bottom-black" onClick = {event => this.dropdownExpand(index)} ><ArrowDropDownIcon /></TableCell>                                            
+                                                    </TableRow>
+                                                </React.Fragment>
+                                            );
+                                        }
+                                                                              
                                     }                                    
                                 })}
                             </TableBody>

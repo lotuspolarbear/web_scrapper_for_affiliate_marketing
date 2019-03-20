@@ -22,6 +22,7 @@ router.get('/getPersonalOverview', (req, res) => {
         {
             'profileId': '',
             'profileName': 'BestVPNReview',
+            'expand': false,
             'info': [{
                 'subAcctId': '',
                 'name': 'BestVPNReview',
@@ -36,6 +37,7 @@ router.get('/getPersonalOverview', (req, res) => {
         {
             'profileId': '',
             'profileName': 'TopStreamingServices',
+            'expand': false,
             'info': [{
                 'subAcctId': '',
                 'name': 'TopStreamingServices',
@@ -50,6 +52,7 @@ router.get('/getPersonalOverview', (req, res) => {
         {
             'profileId': '',
             'profileName': 'BestElectronicReviews',
+            'expand': false,
             'info': [
                 {
                     'subAcctId': '',
@@ -86,6 +89,7 @@ router.get('/getPersonalOverview', (req, res) => {
         {
             'profileId': '',
             'profileName': 'NebulousReviewClub',
+            'expand': false,
             'info': [{
                 'subAcctId': '',
                 'name': 'NebulousReviewClub',
@@ -100,6 +104,7 @@ router.get('/getPersonalOverview', (req, res) => {
         {
             'profileId': '',
             'profileName': 'RetailReviews',
+            'expand': false,
             'info': [{
                 'subAcctId': '',
                 'name': 'RetailReviews',
@@ -114,6 +119,7 @@ router.get('/getPersonalOverview', (req, res) => {
         {
             'profileId': '',
             'profileName': 'VPNReviewHub',
+            'expand': false,
             'info': [{
                 'subAcctId': '',
                 'name': 'VPNReviewHub',
@@ -128,6 +134,7 @@ router.get('/getPersonalOverview', (req, res) => {
         {
             'profileId': '',
             'profileName': 'ViewReviews',
+            'expand': false,
             'info': [{
                 'subAcctId': '',
                 'name': 'ViewReviews',
@@ -142,6 +149,7 @@ router.get('/getPersonalOverview', (req, res) => {
         {
             'profileId': '',
             'profileName': 'BuyViewsReview',
+            'expand': false,
             'info': [{
                 'subAcctId': '',
                 'name': 'BuyViewsReview',
