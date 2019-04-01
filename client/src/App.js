@@ -25,18 +25,20 @@ class App extends Component {
 		this.state = {
 			isLoggedin: false
 		};
-		// this.handler = this.handler.bind(this);
 	}
 
 	onChange = value => {
 		this.setState({ isLoggedin: value });
-		// this.props.history.push("/");
 	};
 
 	componentDidMount() {
-		if (localStorage.getItem("user")) {
+		if (localStorage.getItem("token")) {
 			this.setState({ isLoggedin: true });
 		}
+	}
+
+	checkLogin = (flag) => {
+		this.setState({isLoggedin : flag});
 	}
 
 	render() {
@@ -44,7 +46,7 @@ class App extends Component {
 			<Router>
 				<div className='App'>
 					<NotificationContainer />
-					<AppNavbar />
+					<AppNavbar isLoggedin={this.state.isLoggedin} />
 
 					{this.state.isLoggedin && (
 						<React.Fragment>
@@ -63,7 +65,7 @@ class App extends Component {
 
 					{!this.state.isLoggedin && (
 						<React.Fragment>
-							<Route exact path='/' render={() => <Login onChange={this.onChange} />} />
+							<Route exact path='/' render={() => <Login checkLogin={this.checkLogin} onChange={this.onChange} />} />
 						</React.Fragment>
 					)}
 				</div>

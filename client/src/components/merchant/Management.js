@@ -109,9 +109,15 @@ class Management extends Component {
 	}
 
 	async componentDidMount() {
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
+		const th = this;
 		await axios.get("/api/merchants/getAllMerchants").then(res => {
 			this.setState({ merchantList: res.data });
-		});
+		}).catch(function (error) {
+            if (error.response.status === 403) {
+                th.props.history.push('/logout')
+            }
+        });
 	}
 	onChange(e) {
 		this.setState({ [e.target.name]: e.target.value });

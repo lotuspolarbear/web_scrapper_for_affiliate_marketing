@@ -406,36 +406,64 @@ module.exports.doScrape = async function(account) {
 			{ waitUntil: 'domcontentloaded' }
 		);
 		await referralsPage.waitFor(20000);
+		
 		var scrapFlag = true;
 		while(scrapFlag) {
 			var html = await referralsPage.content();
 			let $ = cheerio.load(html);
+
+			var idForComm, idForOrderId, idForChannel, idForPaid, idForCreated;
+			var tableHeaderItems = $(".GridHeader .grid-header-cell");
+			for(var i = 0; i<tableHeaderItems.length; i++){
+				let headerItem = $(tableHeaderItems[i]).text().trim();
+				switch(headerItem){
+					case "Commission":
+						idForComm = i;
+						break;
+					case "Order ID":
+						idForOrderId = i;
+						break;
+					case "Channel":
+						idForChannel = i;
+						break;
+					case "Paid":
+						idForPaid = i;
+						break;
+					case "Type":
+						idForPaid = i;
+						break;
+					case "Created":
+						idForCreated = i;
+
+				}
+			}
+			
 			var rows = $(".GridRow");
 			if (rows.length === 0) {
 				scrapFlag = false;
 			} else {
 				for (var i = 0; i < rows.length; i++) {
 					var current = rows[i];
-					var dataTexts = $(current).find(".DataText");
-					var refferId = $(dataTexts[2])
+					var dataTexts = $(current).find(".GridCell .Data");
+					var refferId = $(dataTexts[idForOrderId])
 						.text()
 						.trim();
 					var amount = parseFloat(
-						$(dataTexts[1])
+						$(dataTexts[idForComm])
 							.text()
 							.trim()
 							.replace("$ ‎", "")
 							.replace(/,/g, "")
 					);
-					var description = $(dataTexts[5])
+					var description = $(dataTexts[idForChannel])
 						.text()
 						.trim();
-					var status = $(dataTexts[4])
+					var status = $(dataTexts[idForPaid])
 						.text()
 						.trim();
 					var refDate = date.format(
 						new Date(
-							$(dataTexts[3])
+							$(dataTexts[idForCreated])
 								.text()
 								.trim()
 						),
@@ -471,7 +499,7 @@ module.exports.doScrape = async function(account) {
 				}
 				var nextPageBtn = $(".GridBottom .pagination .PagerRight");
 				if(nextPageBtn.hasClass("PagerRight-disabled")) {
-					scrapFlag = false;					
+			 		scrapFlag = false;					
 				} else {				
 					const BUTTON_SELECTOR = ".GridBottom .pagination .PagerRight";
 					await referralsPage.click(BUTTON_SELECTOR);
@@ -500,9 +528,11 @@ module.exports.doScrape = async function(account) {
 		const BUTTON_SELECTOR = ".ImLeButtonMain";
 		await loginPage.click(USERNAME_SELECTOR);
 		await loginPage.keyboard.type(account.username);
+		//await loginPage.keyboard.type("affiliates@viewsreviews.org");
 
 		await loginPage.click(PASSWORD_SELECTOR);
 		await loginPage.keyboard.type(loginPassword);
+		//await loginPage.keyboard.type("AffMio!@#");
 
 		await loginPage.click(BUTTON_SELECTOR);
 

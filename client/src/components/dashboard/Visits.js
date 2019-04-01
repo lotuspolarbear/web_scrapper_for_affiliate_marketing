@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
+import axios from "axios";
+import { NotificationManager } from "react-notifications";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -14,7 +16,6 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import TableHead from "@material-ui/core/TableHead";
-import axios from "axios";
 const uuidv1 = require("uuid/v1");
 
 const actionsStyles = theme => ({
@@ -160,29 +161,58 @@ class Visits extends React.Component {
 	}
 
 	async componentDidMount() {
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
 		if (this.mounted) {
 			if (this.props.id) {
 				await this.setState({ isLoading: true });
 				await axios.post("/api/visits/getVisits", { subAcctId: this.props.id }).then(res => {
-					this.setState({
-						tableData: res.data.visits,
-						page: 0,
-						isLoading: false
-					});
+					if(res.data.success) {
+						this.setState({
+							tableData: res.data.visits,
+							page: 0,
+							isLoading: false
+						});
+					} else {
+						this.setState({
+							isLoading: false
+						});
+						NotificationManager.error(res.data.msg, "Error!", 5000);
+					}					
+				})
+				.catch(function (error) {
+					if (error.response.status === 403) {
+						//th.props.history.push('/logout')
+						//window.location.reload();
+					}
 				});
 			}
 		}
 	}
 
 	async componentWillReceiveProps(nextProps) {
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
+		let th = this;
 		if (nextProps.id !== "" && this.state.selectedId !== nextProps.id) {
 			await this.setState({ selectedId: nextProps.id, isLoading: true });
 			await axios.post("/api/visits/getVisits", { subAcctId: this.props.id }).then(res => {
-				this.setState({
-					tableData: res.data.visits,
-					page: 0,
-					isLoading: false
-				});
+				if(res.data.success) {
+					this.setState({
+						tableData: res.data.visits,
+						page: 0,
+						isLoading: false
+					});
+				} else {
+					this.setState({
+						isLoading: false
+					});
+					NotificationManager.error(res.data.msg, "Error!", 5000);
+				}					
+			})
+			.catch(function (error) {
+				if (error.response.status === 403) {
+					//th.props.history.push('/logout')
+					//window.location.reload();
+				}
 			});
 		} else if (nextProps.id === "") {
 			await this.setState({ selectedId: "", tableData: [], page: 0, isLoading: false });

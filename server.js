@@ -18,7 +18,7 @@ const crons = require("./controller/crons");
 app.use(bodyParser.json());
 
 // DB Config
-//const db = require("./config/config").localMongoURI;
+// const db = require("./config/config").localMongoURI;
 const db = require("./config/config").mongoURI;
 
 // Connect to Mongo

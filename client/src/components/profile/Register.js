@@ -21,7 +21,8 @@ class Register extends Component {
 	}
 	onSubmit(e) {
 		e.preventDefault();
-
+		const th = this;
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
 		axios
 			.post("/api/profiles/register", {
                 displayName: this.state.displayName,
@@ -33,6 +34,11 @@ class Register extends Component {
 					//this.props.history.push("/Dashboard");
 				} else {
 					NotificationManager.error(res.data.msg, "Error!", 5000);
+				}
+			})
+			.catch(function (error) {
+				if (error.response.status === 403) {
+					th.props.history.push('/logout')
 				}
 			});
 	}

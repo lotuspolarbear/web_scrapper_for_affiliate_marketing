@@ -152,10 +152,16 @@ class Management extends Component {
         };
     }
   
-    async componentDidMount() {        
+    async componentDidMount() {
+        const th = this;
+        axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
         await axios.get("/api/subaccounts/getAllSubAccounts").then(res => {
             this.setState({subAccountList: res.data});
-        })
+        }).catch(function (error) {
+            if (error.response.status === 403) {
+                th.props.history.push('/logout')
+            }
+        });
     }
 
     handleScriptCreate() {
@@ -184,36 +190,40 @@ class Management extends Component {
     }
         
     handleCronSched(accountId) {
-        axios
-            .post("/api/subaccounts/reSchedule", {
-                accountId: accountId,
-                newCronSched: this.state.newCronSched
-            })
-            .then(res => {              
-                if (res.data.success) {
-                    this.setState({ newCronSched: "" });
-                    this.setState(state => {
-                        const subAccountList = state.subAccountList.map(account => {
-                          if (account._id === accountId) {
-                            account.cronSched = res.data.newCronSched;
-                            return account;
-                          } else {
-                            return account;
-                          }
-                        });                  
-                        return {
-                            subAccountList
-                        };
-                    });
-                    NotificationManager.success(
-                        res.data.msg,
-                        "Notification!",
-                        5000
-                    );
-                } else {
-                    NotificationManager.error(res.data.msg, "Error!", 5000);
-                }
-            });        
+        const th = this;
+        axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
+        axios.post("/api/subaccounts/reSchedule", {
+            accountId: accountId,
+            newCronSched: this.state.newCronSched
+        }).then(res => {              
+            if (res.data.success) {
+                this.setState({ newCronSched: "" });
+                this.setState(state => {
+                    const subAccountList = state.subAccountList.map(account => {
+                        if (account._id === accountId) {
+                        account.cronSched = res.data.newCronSched;
+                        return account;
+                        } else {
+                        return account;
+                        }
+                    });                  
+                    return {
+                        subAccountList
+                    };
+                });
+                NotificationManager.success(
+                    res.data.msg,
+                    "Notification!",
+                    5000
+                );
+            } else {
+                NotificationManager.error(res.data.msg, "Error!", 5000);
+            }
+        }).catch(function (error) {
+            if (error.response.status === 403) {
+                th.props.history.push('/logout')
+            }
+        });        
     }
     handleRequestSort = (event, property) => {
         const orderBy = property;

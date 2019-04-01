@@ -20,17 +20,23 @@ class Register extends Component {
 	}
 	onSubmit(e) {
 		e.preventDefault();
-
+		let th = this;
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
 		axios
 			.post("/api/merchants/register", {
 				name: this.state.name
 			})
 			.then(res => {
 				if (res.data.success) {
-					NotificationManager.success(res.data.msg, "Notification!", 5000);
-					this.props.history.push("/Dashboard");
+					NotificationManager.success(res.data.msg, "Notification!", 3000);
+					th.props.history.push("/Dashboard");
 				} else {
-					NotificationManager.error(res.data.msg, "Error!", 5000);
+					NotificationManager.error(res.data.msg, "Error!", 3000);
+				}
+			})
+			.catch(function (error) {
+				if (error.response.status === 403) {
+					th.props.history.push('/logout')
 				}
 			});
 	}

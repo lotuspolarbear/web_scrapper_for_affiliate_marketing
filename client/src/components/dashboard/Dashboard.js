@@ -49,6 +49,8 @@ class Dashboard extends Component {
 	}
 
 	async componentDidMount() {
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
+		const th = this;
 		if (this.mounted) {
 			await axios.get("/api/merchants/getAllMerchants").then(res => {
 				if (res.data.length === 0) {
@@ -61,34 +63,44 @@ class Dashboard extends Component {
 					});
 					this.setState({ selectedMerchantId: this.state.merchants[0].value });
 				}
-			});
-			await axios.get("/api/subaccounts/getAllSubAccounts").then(res => {
-				if (res.data.length === 0) {
-					this.setState({ subAccounts: "no result" });
-				} else {
-					var flag = true;
-					var arr = [];
-					res.data.map(account => {
-						if (flag) {
-							flag = false;
-							this.setState({ flag: false, selectedAccountId: account._id });
-						}
-						var subAccount = {};
-
-						for (var i = 0; i < this.state.merchants.length; i++) {
-							if (account.merchantId === this.state.merchants[i].value) {
-								subAccount.value = account._id;
-								subAccount.name = account.name;
-								subAccount.merchant_id = account.merchantId;
-								subAccount.merchant_name = this.state.merchants[i].name;
-								arr.push(subAccount);
-								break;
+				axios.get("/api/subaccounts/getAllSubAccounts").then(res => {
+					if (res.data.length === 0) {
+						this.setState({ subAccounts: "no result" });
+					} else {
+						var flag = true;
+						var arr = [];
+						res.data.map(account => {
+							if (flag) {
+								flag = false;
+								this.setState({ flag: false, selectedAccountId: account._id });
 							}
-						}
-					});
-					this.setState({
-						subAccounts: arr
-					});
+							var subAccount = {};
+	
+							for (var i = 0; i < this.state.merchants.length; i++) {
+								if (account.merchantId === this.state.merchants[i].value) {
+									subAccount.value = account._id;
+									subAccount.name = account.name;
+									subAccount.merchant_id = account.merchantId;
+									subAccount.merchant_name = this.state.merchants[i].name;
+									arr.push(subAccount);
+									break;
+								}
+							}
+						});
+						this.setState({
+							subAccounts: arr
+						});
+					}
+				})
+				.catch(function (error) {
+					if (error.response.status === 403) {
+						th.props.history.push('/logout')
+					}
+				});
+			})
+			.catch(function (error) {
+				if (error.response.status === 403) {
+					th.props.history.push('/logout')
 				}
 			});
 			this.setState({ flag: true });

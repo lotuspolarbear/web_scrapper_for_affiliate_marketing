@@ -36,6 +36,8 @@ class Register extends Component {
 	}
 
 	async componentDidMount() {
+		const th = this;
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
 		await axios.get("/api/merchants/getAllMerchants").then(res => {
 			if (res.data.length === 0) {
 				this.setState({ merchants: "no result" });
@@ -47,25 +49,35 @@ class Register extends Component {
 				});
 				this.setState({ merchantId: this.state.merchants[0].value });
 			}
-		});
-		await axios.get("/api/profiles/getAllProfiles").then(res => {
-			if (res.data.length === 0) {
-				this.setState({ profiles: "no result" });
-			} else {
-				this.setState({
-					profiles: res.data.map(profile => {
-						return { value: profile._id, displayName: profile.displayName, url: profile.url };
-					})
-				});
-				this.setState({ profileId: this.state.profiles[0].value });
-			}
-		});
+			
+			axios.get("/api/profiles/getAllProfiles").then(res => {
+				if (res.data.length === 0) {
+					this.setState({ profiles: "no result" });
+				} else {
+					this.setState({
+						profiles: res.data.map(profile => {
+							return { value: profile._id, displayName: profile.displayName, url: profile.url };
+						})
+					});
+					this.setState({ profileId: this.state.profiles[0].value });
+				}
+			}).catch(function (error) {
+				if (error.response.status === 403) {
+					th.props.history.push('/logout')
+				}
+			});
+		}).catch(function (error) {
+            if (error.response.status === 403) {
+                th.props.history.push('/logout')
+            }
+        });
 	}
 
 	onChange(e) {
 		this.setState({ [e.target.name]: e.target.value });
 	}
 	onSubmit(e) {
+		const th = this;
 		e.preventDefault();
 		if (this.state.password !== this.state.cpassword) {
 			NotificationManager.error("Password should be confirmed", "Error!", 5000);
@@ -78,6 +90,7 @@ class Register extends Component {
 					}
 				}
 			}
+			axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
 			axios
 				.post("/api/subaccounts/register", {
 					merchantId: this.state.merchantId,
@@ -98,7 +111,12 @@ class Register extends Component {
 					} else {
 						NotificationManager.error(res.data.msg, "Error!", 5000);
 					}
-				});
+				})
+				.catch(function (error) {
+					if (error.response.status === 403) {
+						th.props.history.push('/logout')
+					}
+				});;
 		}
 	}
 	handleScriptCreate() {

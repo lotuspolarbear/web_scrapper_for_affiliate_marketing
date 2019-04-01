@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 
+import axios from "axios";
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, InlineDatePicker } from 'material-ui-pickers';
@@ -15,7 +16,6 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import { withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
-import axios from "axios";
 
 const rows = [
     {
@@ -96,12 +96,23 @@ class Home extends Component {
 	}
 
 	async componentDidMount() {
+        axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
+        let th = this;
 		await axios.get("/api/home/getOverview").then(res => {
             this.setState({ overview: res.data });
+        }).catch(function (error) {
+            if (error.response.status === 403) {
+                th.props.history.push('/logout')
+            }
         });
+        
         await axios.get("/api/home/getPersonalOverview").then(res => {
             this.setState({personalOverview: res.data});
-        })
+        }).catch(function (error) {
+            if (error.response.status === 403) {
+                th.props.history.push('/logout')
+            }
+        });
 	}
 
     formatAmount = function(temp){
@@ -224,7 +235,6 @@ class Home extends Component {
     };
     handleEndDateChange = date => {
         this.setState({ endDate: date });
-        console.log(date);
     };
     dropdownExpand(index){        
         var newOverviews = this.state.personalOverview;        

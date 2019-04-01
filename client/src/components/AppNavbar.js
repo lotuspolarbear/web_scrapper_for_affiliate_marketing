@@ -13,10 +13,12 @@ import {
 } from "reactstrap";
 
 class AppNavbar extends Component {
-	state = {
-		isOpen: false,
-		isLoggedin: false
-	};
+	constructor(props) {
+		super(props);
+		this.state = {
+			isOpen: false
+		};
+	}
 	toggle = () => {
 		this.setState({
 			isOpen: !this.state.isOpen
@@ -32,7 +34,7 @@ class AppNavbar extends Component {
 						<NavbarToggler onClick={this.toggle} />
 						<Collapse isOpen={this.state.isOpen} navbar>
 							<Nav className='ml-auto' navbar>
-								{localStorage.getItem("user") && (
+								{this.props.isLoggedin && (
 									<React.Fragment>
 										<NavItem>
 											<Link className='nav-link' to='/home'>Home</Link>

@@ -18,39 +18,28 @@ class Login extends Component {
 		this.onSubmit = this.onSubmit.bind(this);
 	}
 
-	// async componentDidMount() {
-	// 	await axios.get("/api/merchants/getAllMerchants").then(res => {
-	// 		if (res.data.length === 0) {
-	// 			this.setState({ merchants: "no result" });
-	// 		} else {
-	// 			this.setState({
-	// 				merchants: res.data.map(merchant => {
-	// 					return { value: merchant._id, name: merchant.name };
-	// 				})
-	// 			});
-	// 			this.setState({ merchantId: this.state.merchants[0].value });
-	// 		}
-	// 	});
-	// }
-
 	onChange(e) {
 		this.setState({ [e.target.name]: e.target.value });
 	}
-	onSubmit(e) {
+	async onSubmit(e) {
 		e.preventDefault();
-		axios
+		let th = this;
+		await axios
 			.post("/api/subaccounts/login", {
 				username: this.state.username,
 				password: this.state.password
 			})
 			.then(res => {
-				if (res.data.success) {
-					NotificationManager.success(res.data.detail, res.data.title, 3000);
-					this.setState({ isLoggedin: true });
-					localStorage.setItem("user", this.state.username);
-					this.props.onChange(true);
+				if (res.data.success) {					
+					localStorage.setItem("token", res.data.token);
+					setTimeout(function(){
+						th.setState({ isLoggedin: true });
+						th.props.onChange(true);
+						th.props.checkLogin(true);
+						NotificationManager.success(res.data.message, res.data.title, 3000);
+					}, 1000);					
 				} else {
-					NotificationManager.error(res.data.errors[0].detail, res.data.errors[0].title, 3000);
+					NotificationManager.error(res.data.errors[0].message, res.data.errors[0].title, 3000);
 				}
 			});
 	}

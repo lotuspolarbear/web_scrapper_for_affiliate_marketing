@@ -2,6 +2,8 @@ import "date-fns";
 import React from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
+import axios from "axios";
+import { NotificationManager } from "react-notifications";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -14,7 +16,6 @@ import FirstPageIcon from "@material-ui/icons/FirstPage";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
-import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, InlineDatePicker } from "material-ui-pickers";
@@ -143,10 +144,51 @@ class Statistics extends React.Component {
 	}
 
 	async componentDidMount() {
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
+		let th = this;
 		if (this.mounted) {
 			if (this.props.id) {
 				this.setState({ isLoading: true });
 				await axios.post("/api/statistics/getStatistics", { subAcctId: this.props.id }).then(res => {
+					if(res.data.success) {
+						if (res.data.statistic.length > 0) {
+							this.setState({
+								tableData: res.data.statistic,
+								old: {},
+								page: 0,
+								isLoading: false,
+								selectedDate: new Date(res.data.statistic[0].scrappedDate.replace(".", ""))
+							});
+						} else {
+							this.setState({
+								tableData: [],
+								isLoading: false
+							});
+						}
+					} else {
+						this.setState({
+							isLoading: false
+						});
+						NotificationManager.error(res.data.msg, "Error!", 5000);
+					}					
+				})
+				.catch(function (error) {
+					if (error.response.status === 403) {
+						//th.props.history.push('/logout')
+						//window.location.reload();
+					}
+				});
+			}
+		}
+	}
+
+	async componentWillReceiveProps(nextProps) {
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
+		if (nextProps.id !== "") {
+			await this.setState({ selectedId: nextProps.id, old: {}, isLoading: true });
+
+			await axios.post("/api/statistics/getStatistics", { subAcctId: this.props.id }).then(res => {
+				if(res.data.success) {
 					if (res.data.statistic.length > 0) {
 						this.setState({
 							tableData: res.data.statistic,
@@ -161,29 +203,17 @@ class Statistics extends React.Component {
 							isLoading: false
 						});
 					}
-				});
-			}
-		}
-	}
-
-	async componentWillReceiveProps(nextProps) {
-		if (nextProps.id !== "") {
-			await this.setState({ selectedId: nextProps.id, old: {}, isLoading: true });
-
-			await axios.post("/api/statistics/getStatistics", { subAcctId: this.props.id }).then(res => {
-				if (res.data.statistic.length > 0) {
-					this.setState({
-						tableData: res.data.statistic,
-						old: {},
-						page: 0,
-						isLoading: false,
-						selectedDate: new Date(res.data.statistic[0].scrappedDate.replace(".", ""))
-					});
 				} else {
 					this.setState({
-						tableData: [],
 						isLoading: false
 					});
+					NotificationManager.error(res.data.msg, "Error!", 5000);
+				}					
+			})
+			.catch(function (error) {
+				if (error.response.status === 403) {
+					//th.props.history.push('/logout')
+					//window.location.reload();
 				}
 			});
 		} else if (nextProps.id === "") {

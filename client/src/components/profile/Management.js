@@ -105,8 +105,8 @@ const styles = theme => ({
 });
 
 class Management extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			profileList: [],
 			displayName: "",
@@ -120,8 +120,14 @@ class Management extends Component {
 	}
 
 	async componentDidMount() {
+		const th = this;
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
 		await axios.get("/api/profiles/getAllProfiles").then(res => {
 			this.setState({ profileList: res.data });
+		}).catch(function (error) {
+			if (error.response.status === 403) {
+				th.props.history.push('/logout')
+			}
 		});
 	}
 	onChange(e) {
@@ -147,6 +153,8 @@ class Management extends Component {
 	};
 
 	handleSaveProfile(profileId){
+		const th = this;
+		axios.defaults.headers.common['Authorization'] = "Bearer " + localStorage.getItem("token");
 		axios
             .post("/api/profiles/edit", {
                 profileId: profileId,
@@ -179,7 +187,12 @@ class Management extends Component {
                 } else {
                     NotificationManager.error(res.data.msg, "Error!", 5000);
                 }
-            });
+			})
+			.catch(function (error) {
+				if (error.response.status === 403) {
+					th.props.history.push('/logout')
+				}
+			});
 	}
 
 	handelEditProfile = (event, profileId) => {
